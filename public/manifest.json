@@ -7,10 +7,10 @@
   "browser_action": {
       "default_popup": "index.html",
       "default_title": "Donwload",
-      "default_icon": "",
+      "default_icon": "icon.png",
   },
   "icons": {
-      "64": "icon.png"
+      "256": "icon.png"
   },
   "content_security_policy": "script-src 'self' 'sha256-YWrZAZMzkC/1bIirNxCX5kYbc+EouyDot6B2r8CAxBQ='; object-src 'self'",
   "permissions": ["storage"]

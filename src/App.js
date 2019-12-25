@@ -1,26 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React , { Component } from 'react';
+import style from './App.module.sass';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import Login from './components/Login/Login';
+
+class App extends Component{
+    state = {
+        login: false,
+        path: []
+    }
+
+    setLogin(isLogined){
+        this.setState({
+            login: isLogined
+        })
+    }
+
+    render(){
+        const { login } = this.state;
+        return(
+            <div className={style.app}>
+                {
+                    login ?
+                    <div>logined</div> :
+                    <Login setLogin={(isLogined) => this.setLogin(isLogined)}/>
+                }
+            </div>
+        )
+    }
 }
 
 export default App;
