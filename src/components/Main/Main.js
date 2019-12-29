@@ -3,6 +3,8 @@ import style from './Main.module.sass';
 
 import { main } from '../../Structure/index';
 
+import Instagram from '../ControlComponents/Instagram/Instagram.js'
+
 class Main extends Component{
 
     structureParser(structure){
@@ -31,14 +33,35 @@ class Main extends Component{
         )
     }
 
+    switch(originPath){
+        const path = originPath.slice(1);
+        switch(path){
+            case 'instagram': {
+                return <Instagram />
+            }
+        }
+    }
+
     render(){
-        const { path } = this.props;
+        const { path, clearPath } = this.props;
+        console.log('path === ', path)
         return(
             <div className={style.app}>
-                path: {path}
                 <div>
-                    {this.structureParser(main)}
+                    {
+                     path && <i 
+                        className="far fa-arrow-alt-circle-left" 
+                        style={{marginLeft: '12px', cursor: 'pointer'}}
+                        onClick={() => clearPath()}
+                     />
+                    }
+                    {!path && this.structureParser(main)}
                 </div>
+                {
+                    path && <div>
+                        {this.switch(path)}
+                    </div>
+                }
             </div>
         )
     }

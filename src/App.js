@@ -36,7 +36,7 @@ class App extends Component{
                     <Main 
                         path={path[0]}
                         setPath={(path) => this.setPath(path)}
-                        clearHistory={this.clearPath.bind(this)}
+                        clearPath={this.clearPath.bind(this)}
                     /> :
                     <Login setLogin={(isLogined) => this.setLogin(isLogined)}/>
                 }
