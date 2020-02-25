@@ -58,9 +58,11 @@ class Main extends Component{
                     {!path && this.structureParser(main)}
                 </div>
                 {
-                    path && <div>
-                        {this.switch(path)}
-                    </div>
+                    path && (
+                        <div>
+                            {this.switch(path)}
+                        </div>
+                    )
                 }
             </div>
         )
