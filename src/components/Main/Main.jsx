@@ -1,9 +1,9 @@
 import React , { Component } from 'react';
 import style from './Main.module.sass';
 
-import { main } from '../../Structure/index';
+import { main } from '../../structure/index.js';
 
-import Instagram from '../ControlComponents/Instagram/Instagram.js'
+import Instagram from '../ControlComponents/Instagram/Instagram.jsx'
 
 class Main extends Component{
 

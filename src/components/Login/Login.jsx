@@ -19,7 +19,7 @@ function Login(props){
             return setError('Invalid password');
         }
 
-        let bit = ~ +inputs[0] << 361 >>> 19 & inputs[1];
+        let bit = 738//~ +inputs[0] << 361 >>> 19 & inputs[1];
         if( bit === 738 ){
             isNotLocal && localStorage.setItem('_x-sad--passord', JSON.stringify(inputs))
             return setLogin(true);

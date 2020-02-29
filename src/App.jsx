@@ -1,13 +1,16 @@
-import React , { Component } from 'react';
+import React from 'react';
 import style from './App.module.sass';
 
-import Login from './components/Login/Login';
-import Main from './components/Main/Main';
+import Login from './components/Login/Login.jsx';
+import Main from './components/Main/Main.jsx';
 
-class App extends Component{
-    state = {
-        login: false,
-        path: []
+class App extends React.Component{
+    constructor() {
+        super();
+        this.state = {
+            login: false,
+            path: []
+        }
     }
 
     setLogin(isLogined){

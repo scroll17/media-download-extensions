@@ -4,13 +4,13 @@ import style from './Instagram.module.sass';
 
 import Switch from '@material-ui/core/Switch'
 
-import { donwloadVideo, donwloadStory } from '../../../API/Instagram/load';
+import { donwloadVideo, donwloadStory } from '../../../api/Instagram/load';
 
 function log(){
     console.log('click')
 }
 
-document.addEventListener('dblclick', () => {
+/*document.addEventListener('dblclick', () => {
     console.log("Popup DOM fully loaded and parsed");
 
     function modifyDOM() {
@@ -28,7 +28,7 @@ document.addEventListener('dblclick', () => {
         console.log('Popup script:')
         console.log(results[0]);
     });
-});
+});*/
 
 function Instagram(props){
     const [lVideo, setLVideo] = useState(false);
@@ -82,7 +82,7 @@ function Instagram(props){
                     onChange={() => setDonwloadStory()}
                 />  
             </div>
-            {lStory && placeHolder('two click on video')}
+            {lStory && placeHolder('two click on story')}
         </div>
     )
 }
