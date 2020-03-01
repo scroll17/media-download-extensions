@@ -6,9 +6,6 @@ import Switch from '@material-ui/core/Switch'
 
 import { donwloadVideo, donwloadStory } from '../../../api/Instagram/load';
 
-function log(){
-    console.log('click')
-}
 
 /*document.addEventListener('dblclick', () => {
     console.log("Popup DOM fully loaded and parsed");
@@ -34,7 +31,7 @@ function Instagram(props){
     const [lVideo, setLVideo] = useState(false);
     const [lStory, setLStory] = useState(false);
 
-    const setDonwloadVideo = () => {
+    const setDownloadVideo = () => {
         if(lVideo){
             window.addEventListener('dblclick', log);
         }else{
@@ -43,7 +40,7 @@ function Instagram(props){
         return setLVideo(lVideo => !lVideo);
     };
 
-    const setDonwloadStory = () => {
+    const setDownloadStory = () => {
         if(lStory){
             window.addEventListener('dblclick', log);
         }else{
@@ -69,17 +66,17 @@ function Instagram(props){
                 </span>
                 <Switch
                     checked={lVideo}
-                    onChange={() => setDonwloadVideo()}
+                    onChange={() => setDownloadVideo()}
                 />  
             </div>
             {lVideo && placeHolder('two click on video')}
             <div>
                 <span className={style.text}>
-                    Donwload story
+                    Download story
                 </span>
                 <Switch
                     checked={lStory}
-                    onChange={() => setDonwloadStory()}
+                    onChange={() => setDownloadStory()}
                 />  
             </div>
             {lStory && placeHolder('two click on story')}

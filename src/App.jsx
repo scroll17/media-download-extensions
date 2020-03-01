@@ -8,15 +8,9 @@ class App extends React.Component{
     constructor() {
         super();
         this.state = {
-            login: false,
+            login: true,
             path: []
         }
-    }
-
-    setLogin(isLogined){
-        this.setState({
-            login: isLogined
-        })
     }
     setPath(path){
         this.setState({
@@ -36,7 +30,7 @@ class App extends React.Component{
             <div className={style.app}>
                 {
                     login ?
-                    <Main 
+                    <Main
                         path={path[0]}
                         setPath={(path) => this.setPath(path)}
                         clearPath={this.clearPath.bind(this)}

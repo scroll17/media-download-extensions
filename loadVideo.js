@@ -1,45 +1,77 @@
-const createVideoUrl = (url) => `https://www.instagram.com/graphql/query/?query_hash=870ea3e846839a3b6a8cd9cd7e42290c&variables=%7B%22shortcode%22%3A%22${url}%22%2C%22child_comment_count%22%3A3%2C%22fetch_comment_count%22%3A40%2C%22parent_comment_count%22%3A24%2C%22has_threaded_comments%22%3Atrue%7D`;
+    function instagramDownloadContent(){
+        const openInNewWindow = false; // TODO
 
-const createLink = (src) => {
-    const link = document.createElement('a');
-    link.setAttribute('target', "__blank");
-    link.setAttribute('href', src);
-    link.setAttribute('download', "download");
+        const locationPathname = document.location.pathname
 
-    link.click();
-};
+        function getCurrentDate() {
+            return Date.now()
+        }
+        
+        function createLinkAndClick(src) {
+            const link = document.createElement('a');
+            link.setAttribute('target', "__blank");
 
-const getResponseObject = (url) => {
-    const xhr = new XMLHttpRequest();
+            if(openInNewWindow){
+                link.setAttribute('href', src);
+                link.click();
+            } else {
+                createDownloadAttribute(src, link).then((link) => link.click());
+            }
+        }
 
-    xhr.open('GET', url, false);
-    xhr.send();
+        function createDownloadAttribute(src, element) {
+            return fetch(src)
+                .then(response => {
+                    if (response.ok) {
+                        return response
+                    } else {
+                        const error = new Error(response.statusText)
+                        error.response = response
+                        throw error
+                    }
+                })
+                .then(response => response.blob())
+                .then(blob => {
+                    const objectURL = URL.createObjectURL(blob);
 
-    const responseJSON = "" + xhr.responseText + "";
+                    element.setAttribute('href', objectURL);
+                    element.setAttribute('download', getCurrentDate());
 
-    const responseObject = JSON.parse(responseJSON);
+                    return element
+                })
+        }
 
-    return responseObject.data.shortcode_media.video_url;
-};
+        function getResponseObject(url) {
+            return fetch(url)
+                .then(response => {
+                    if (response.ok) {
+                        return response
+                    } else {
+                        const error = new Error(response.statusText)
+                        error.response = response
+                        throw error
+                    }
+                })
+                .then(response => response.json())
+                .then(responseObject => responseObject.data.shortcode_media.video_url)
+        }
 
+        const createVideoUrl = (url) => `https://www.instagram.com/graphql/query/?query_hash=870ea3e846839a3b6a8cd9cd7e42290c&variables=%7B%22shortcode%22%3A%22${url}%22%2C%22child_comment_count%22%3A3%2C%22fetch_comment_count%22%3A40%2C%22parent_comment_count%22%3A24%2C%22has_threaded_comments%22%3Atrue%7D`;
 
-function donwloadStory(){
-    const video = document.getElementsByClassName('y-yJ5 OFkrO') [0].getElementsByTagName("source")[0];
-    createLink(video.src);
-};
+        if(locationPathname.startsWith('/stories')){
+            const story = document.getElementsByClassName('y-yJ5 OFkrO')[0].getElementsByTagName("source")[0];
 
-const donwloadVideo = () => {
-    const videoLocationPathname = document.location.pathname.match(/\/p\/(.*)\//)[1];
+            createLinkAndClick(story.src);
+        }
 
-    const url = createVideoUrl(videoLocationPathname);
+        if(locationPathname.startsWith('/p')){
+            const videoLocationPathname = document.location.pathname.match(/\/p\/(.*)\//)[1];
 
-    const src = getResponseObject(url);
+            const url = createVideoUrl(videoLocationPathname);
 
-    createLink(src);
-};
+            getResponseObject(url)
+                .then(src => createLinkAndClick(src));
+        }
+    }
 
-window.addEventListener('dblclick', donwloadVideo);
-//window.removeEventListener('dblclick', donwloadVideo)
-
-//window.addEventListener('dblclick', donwloadStory);
-//window.removeEventListener('dblclick', donwloadStory)
+    window.addEventListener('dblclick', instagramDownloadContent)
