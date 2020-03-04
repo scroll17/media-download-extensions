@@ -4,49 +4,45 @@ import style from './Instagram.module.sass';
 
 import Switch from '@material-ui/core/Switch'
 
-import { donwloadVideo, donwloadStory } from '../../../api/Instagram/load';
-
-
-/*document.addEventListener('dblclick', () => {
-    console.log("Popup DOM fully loaded and parsed");
-
-    function modifyDOM() {
-        //You can play with your DOM here or check URL against your regex
-        console.log('Tab script:');
-        console.log(document.body);
-        return document.body.innerHTML;
-    }
-
-    //We have permission to access the activeTab, so we can call chrome.tabs.executeScript:
-    chrome.tabs.executeScript({
-        code: '(' + modifyDOM + ')();' //argument here is a string but function.toString() returns function's code
-    }, (results) => {
-        //Here we have just the innerHTML and not DOM structure
-        console.log('Popup script:')
-        console.log(results[0]);
+function sendMessage(type, data){
+    chrome.extension.sendMessage({
+        type: `instagram-${type}`,
+        data
     });
-});*/
+}
 
 function Instagram(props){
+    const { DOMStatus } = props;
+
     const [lVideo, setLVideo] = useState(false);
     const [lStory, setLStory] = useState(false);
 
     const setDownloadVideo = () => {
-        if(lVideo){
-            window.addEventListener('dblclick', log);
-        }else{
-            window.removeEventListener('dblclick', log)
+        if(DOMStatus.load){
+            if(lStory) setDownloadStory();
+
+            if(lVideo){
+                sendMessage('stop',{ openInNewWindow: false });
+            } else {
+                sendMessage('start',{ openInNewWindow: false });
+            }
+
+            return setLVideo(lVideo => !lVideo);
         }
-        return setLVideo(lVideo => !lVideo);
     };
 
     const setDownloadStory = () => {
-        if(lStory){
-            window.addEventListener('dblclick', log);
-        }else{
-            window.removeEventListener('dblclick', log)
+        if(DOMStatus.load){
+            if(lVideo) setDownloadVideo();
+
+            if(lStory){
+                sendMessage('stop',{ openInNewWindow: false });
+            } else {
+                sendMessage('start',{ openInNewWindow: false });
+            }
+
+            return setLStory(lStory => !lStory);
         }
-        return setLStory(lStory => !lStory);
     };
 
 
@@ -61,8 +57,15 @@ function Instagram(props){
     return(
         <div className={style.container}>
             <div>
+                Instagram page: {
+                    DOMStatus.load ?
+                        <i className="fas fa-check-circle"/> :
+                        <i className="fas fa-times-circle"/>
+                }
+            </div>
+            <div>
                 <span className={style.text}>
-                    Donwload video
+                    Download video
                 </span>
                 <Switch
                     checked={lVideo}

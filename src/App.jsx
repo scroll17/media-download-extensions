@@ -4,11 +4,14 @@ import style from './App.module.sass';
 import Login from './components/Login/Login.jsx';
 import Main from './components/Main/Main.jsx';
 
+
 class App extends React.Component{
     constructor() {
         super();
+
         this.state = {
             login: true,
+            DOMLoad: true,
             path: []
         }
     }
@@ -25,7 +28,7 @@ class App extends React.Component{
     }
 
     render(){
-        const { login, path } = this.state;
+        const { login, path, DOMLoad } = this.state;
         return(
             <div className={style.app}>
                 {
@@ -34,6 +37,7 @@ class App extends React.Component{
                         path={path[0]}
                         setPath={(path) => this.setPath(path)}
                         clearPath={this.clearPath.bind(this)}
+                        DOMStatus={{ load: DOMLoad }}
                     /> :
                     <Login setLogin={(isLogined) => this.setLogin(isLogined)}/>
                 }

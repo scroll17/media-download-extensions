@@ -6,10 +6,10 @@ import { main } from '../../structure/index.js';
 import Instagram from '../ControlComponents/Instagram/Instagram.jsx'
 
 class Main extends Component{
-
     structureParser(structure){
         const result = [];
         const { setPath } = this.props;
+
         structure.forEach(item => {
             const { title, path, gradient } = item;
             result.push(
@@ -35,16 +35,17 @@ class Main extends Component{
 
     switch(originPath){
         const path = originPath.slice(1);
+
         switch(path){
             case 'instagram': {
-                return <Instagram />
+                return <Instagram DOMStatus={this.props.DOMStatus}/>
             }
         }
     }
 
     render(){
         const { path, clearPath } = this.props;
-        console.log('path === ', path)
+
         return(
             <div className={style.app}>
                 <div>

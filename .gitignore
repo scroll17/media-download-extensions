@@ -3,12 +3,14 @@
 /.pnp
 .pnp.js
 package-lock.json
+.idea/
 
 # testing
 /coverage
 
 # production
 /build
+/public/*.txt
 
 # misc
 .DS_Store

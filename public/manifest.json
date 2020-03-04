@@ -1,11 +1,11 @@
 {
-  "name": "Media Donwload Extensions",
-  "version": "0.0.1",
+  "name": "Media Download Extensions",
+  "version": "1.0.0",
   "author": "Denis Zolotarenko",
   "manifest_version": 2,
   "browser_action": {
       "default_popup": "index.html",
-      "default_title": "Donwload",
+      "default_title": "Download",
       "default_icon": "icon.png"
   },
   "icons": {
@@ -13,8 +13,14 @@
   },
   "background": {
     "persistent": false,
-    "scripts":["static/js/2.*.chunk.js"]
+    "scripts": ["background.js"]
   },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content.js"]
+    }
+  ],
   "content_security_policy": "script-src 'self' 'sha256-YWrZAZMzkC/1bIirNxCX5kYbc+EouyDot6B2r8CAxBQ=' https://kit.fontawesome.com/8a98030ce8.js; object-src 'self'",
   "permissions": [
     "tabs",
