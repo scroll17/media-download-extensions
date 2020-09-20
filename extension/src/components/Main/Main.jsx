@@ -1,7 +1,7 @@
 import React , { Component } from 'react';
 import style from './Main.module.sass';
 
-import { main } from '../../structure/index.js';
+import { main } from '../../structure';
 
 import Instagram from '../ControlComponents/Instagram/Instagram.jsx'
 

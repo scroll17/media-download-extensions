@@ -82,7 +82,7 @@ function Instagram(props){
                     onChange={() => setDownloadStory()}
                 />  
             </div>
-            {lStory && placeHolder('two click on story')}
+            {lStory && placeHolder('two click on stories')}
         </div>
     )
 }

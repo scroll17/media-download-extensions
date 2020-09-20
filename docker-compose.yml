@@ -1,0 +1,27 @@
+version: "3"
+services:
+  api:
+    image: node:12.18.4
+    container_name: media_api
+    working_dir: /home/node/media-api
+    tty: true
+    restart: "always"
+    links:
+    - database:database
+    - redis:redis
+    depends_on:
+      - database
+      - redis
+    ports:
+    - 4100:4100
+    volumes:
+    - ./server:/home/node/media-api
+    entrypoint: /bin/bash
+    command: -s
+
+  redis:
+    image: redis:5.0.3-alpine
+    container_name: media_redis
+    ports:
+    - 6381:6379
+    restart: "always"
