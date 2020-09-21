@@ -5,3 +5,5 @@ package-lock.json
 conf.json
 
 # DB
+src/db/exp/*
+src/db/migration/migrations.json
