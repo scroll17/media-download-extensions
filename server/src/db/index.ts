@@ -4,7 +4,7 @@ import path from "path";
 /* other */
 import { sql, SqlStatement } from "./sql";
 
-class DB {
+export class DB {
     private constructor(private readonly _db: Database) {}
 
     static async connect(dbPath: string): Promise<DB>{
