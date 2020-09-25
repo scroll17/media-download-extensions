@@ -3,7 +3,7 @@ import path from "path";
 import _ from 'lodash'
 import { promises as fs, existsSync } from 'fs'
 /*DB*/
-import {DB, mainDB} from "../index";
+import { mainDB } from "../index";
 import {
     downMigrations,
     getDiffMigrations,
@@ -12,6 +12,7 @@ import {
     transformStringMigrations,
     upMigrations
 } from "./utils";
+import {run} from "./utils/run";
 /*utils*/
 /*other*/
 
@@ -25,21 +26,48 @@ import {
  * }
  * */
 
-export function runInMainDB(cb: (db: DB) => Promise<void>) {
-    return async () => {
-        try {
-            await mainDB.transaction(cb);
-        } catch (error) {
-            throw error;
-        }
-    };
-}
+/**
+ *      Strategy:
+ *        - Check missing migrations (have in Store but not exist in Dir).
+ *        - Check args paths in migration directory.
+ *
+ *        1. Create
+ *          - Check migration template for existence.
+ *        2. Up
+ *          - If "paths" and "newMigrations" (migrations that are in the directory but not in the Store) empty -> return (already upped).
+ *          - If "paths" empty - then up all "newMigrations".
+ *          - If "paths" not empty - then:
+ *              1. find migrations with max "timestamp" in "paths"
+ *              2. filter "newMigrations" by "timestamp" <= max "timestamp"
+ *              3. if migrations to up is empty -> then return (already upped)
+ *              4. up migrations
+ *          - Save upped migrations to Store.
+ *        3. Down
+ *          - If "migrations" in Store is empty -> return (already down).
+ *          - If "paths" empty - then down all migrations from Store.
+ *          - If "paths" not empty - then:
+ *              1. find migrations with min "timestamp" in "paths"
+ *              2. filter "migrations" in Store by "timestamp" >= min "timestamp"
+ *              3. if migrations to down is empty -> return (already down)
+ *              4. down migrations
+ *          - Remove down migrations from Store.
+ *        4. Delete
+ *          - If "paths" is empty -> return (no provided data).
+ *          - If "paths" includes in active "migrations" -> error (need down first).
+ *          - Unlink (delete) files by "paths".
+ *        5. List
+ *          - Show all active migrations
+ *
+ * */
+
+export const runInMainDB = run(mainDB);
 
 export enum MigrateCommand {
     Up = 'up',
     Down = 'down',
     Delete = 'delete',
-    Create = 'create'
+    Create = 'create',
+    List = 'list'
 }
 
 export enum Databases {
@@ -113,30 +141,6 @@ export async function execMigrate(cmd: MigrateCommand, DBName: Databases, paths:
 
             break;
         }
-        case MigrateCommand.Delete: {
-            if(_.isEmpty(paths)) {
-                console.debug('No provided paths.')
-                return
-            }
-
-            const activeMigrations = _.chain(activeStore.migrations)
-                .map('title')
-                .filter(m => paths.includes(m))
-                .value();
-            if(activeMigrations.length) {
-                throw new Error(`Migrations is upped: [ ${activeMigrations.join(', ')} ]. \nUse first "down".`)
-            }
-
-            await Promise.all(
-                paths.map(async filePath => {
-                    const pathInDir = path.resolve(migrationsDirPath, filePath);
-
-                    console.debug(`Remove: ${filePath}`)
-                    await fs.unlink(pathInDir)
-                })
-            )
-            break;
-        }
         case MigrateCommand.Up: {
             let migrationsToSave: Migration[];
 
@@ -149,8 +153,7 @@ export async function execMigrate(cmd: MigrateCommand, DBName: Databases, paths:
                 migrationsToSave = await upMigrations(newMigrations, migrationsDirPath)
             } else {
                 const lastMigrationToUp = _.chain(transformStringMigrations(paths))
-                    .sort((a, b) => (a.timestamp - b.timestamp))
-                    .last()
+                    .maxBy('timestamp')
                     .value()
 
                 const migrationsToUp = _.chain(transformStringMigrations(newMigrations))
@@ -183,15 +186,13 @@ export async function execMigrate(cmd: MigrateCommand, DBName: Databases, paths:
                     migrationsDirPath
                 )
             } else {
-                const firstMigrationToDown = _.chain(transformStringMigrations(paths))
-                    .sort((a, b) => (a.timestamp - b.timestamp))
-                    .last()
+                const lastMigrationToDown = _.chain(transformStringMigrations(paths))
+                    .minBy('timestamp')
                     .value()
 
                 const migrationsToDown = _.chain(activeStore.migrations)
-                    .filter(m => m.timestamp <= firstMigrationToDown.timestamp)
+                    .filter(m => m.timestamp >= lastMigrationToDown.timestamp)
                     .map('title')
-                    .intersection(paths)
                     .value()
 
                 if(_.isEmpty(migrationsToDown)) {
@@ -203,6 +204,38 @@ export async function execMigrate(cmd: MigrateCommand, DBName: Databases, paths:
             }
 
             activeStore = removeMigrations(activeStore, _.map(migrationsToRemove, 'title'))
+            break;
+        }
+        case MigrateCommand.Delete: {
+            if(_.isEmpty(paths)) {
+                console.debug('No provided paths.')
+                return
+            }
+
+            const activeMigrations = _.chain(activeStore.migrations)
+                .map('title')
+                .filter(m => paths.includes(m))
+                .value();
+            if(activeMigrations.length) {
+                throw new Error(`Migrations is upped: [ ${activeMigrations.join(', ')} ]. \nUse first "down".`)
+            }
+
+            await Promise.all(
+                paths.map(async filePath => {
+                    const pathInDir = path.resolve(migrationsDirPath, filePath);
+
+                    console.debug(`Remove: ${filePath}`)
+                    await fs.unlink(pathInDir)
+                })
+            )
+            break;
+        }
+        case MigrateCommand.List: {
+            activeStore.migrations
+                .sort((a, b) => a.timestamp - b.timestamp)
+                .map(migration => {
+                    console.info(migration.title)
+                })
             break;
         }
     }
