@@ -1,10 +1,20 @@
+
 import http from 'http';
 import { IgApiClient } from 'instagram-private-api'
-import { setEnv } from "./env";
 import {Auth} from "./instagram/Auth";
 import {Content} from "./instagram/Content";
 import { promises as fs } from 'fs'
 
+
+(async () => {
+    const { setEnv } = await import("./env");
+    await setEnv();
+
+    const { bot } = await import( "./telegram ");
+    await bot.launch();
+
+
+})()
 
 // const ig = new IgApiClient();
 //

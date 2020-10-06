@@ -6,7 +6,6 @@ import { ProcessEnv } from "../@types/environment";
 /*other*/
 import requiredOptions from './required'
 
-
 export async function setEnv(): Promise<ProcessEnv> {
     const confPath = path.resolve(__dirname, '../../', 'conf.json');
 
