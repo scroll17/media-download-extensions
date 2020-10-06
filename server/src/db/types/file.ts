@@ -11,6 +11,7 @@ export interface File {
     userId: string;
     type: FileType;
     published: number;
+    approved: number;
     desiredTime: Date;
 
     videoId: string;

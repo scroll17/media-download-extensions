@@ -13,6 +13,7 @@ module.exports.up = runInMainDB(async (db) => {
             "userId"        INTEGER NOT NULL,
             "type"          TEXT    NOT NULL,
             "published"     INTEGER NOT NULL DEFAULT 0,
+            "approved"      INTEGER NOT NULL DEFAULT 0,
             "desiredTime"   TEXT    NOT NULL,
             
             "videoId"       INTEGER DEFAULT NULL,

@@ -1,9 +1,12 @@
 export { scheduler } from './scheduler'
 export { register } from './register'
-export { get_token } from './get_token'
+export { getToken } from './getToken'
+export { approve } from './approve'
 
 export enum Commands {
     Register = 'register',
     Scheduler = 'scheduler',
-    GetToken = 'get_token'
+    GetToken = 'get_token',
+    Approve = 'approve',
+    ForApproval = 'for_approval'
 }

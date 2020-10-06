@@ -10,7 +10,7 @@ import { promises as fs } from 'fs'
     const { setEnv } = await import("./env");
     await setEnv();
 
-    const { bot } = await import( "./telegram ");
+    const { bot } = await import( "./telegram");
     await bot.launch();
 
 

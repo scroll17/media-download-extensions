@@ -1,6 +1,6 @@
 import {Middleware} from "telegraf";
-import {TContext} from "../index";
+import {TTelegrafContext} from "../index";
 
-export const scheduler: Middleware<TContext> = async (ctx) => {
+export const scheduler: Middleware<TTelegrafContext> = async (ctx) => {
     await ctx.reply('SCHEDULER')
 }

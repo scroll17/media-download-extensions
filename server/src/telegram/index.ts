@@ -1,12 +1,18 @@
 /*external modules*/
-import { Telegraf } from 'telegraf';
+import { Telegraf, Context } from 'telegraf';
 /*middlewares*/
 import { checkValidUserId } from "./middleware";
 /*commands*/
-import {Commands, get_token, register, scheduler} from "./commands";
+import {approve, Commands, getToken, register, scheduler} from "./commands";
+import {forApproval} from "./commands/forApproval";
 
-const bot = new Telegraf(process.env.TG_TOKEN);
-type TContext = typeof bot['context'];
+interface TCustomTelegrafContext extends Context {
+    db: string
+}
+
+const bot = new Telegraf<TCustomTelegrafContext>(process.env.TG_TOKEN);
+type TTelegrafContext = typeof bot['context'];
+
 
 bot.start((ctx) => ctx.reply('Бот запущен.'))
 
@@ -16,6 +22,8 @@ bot.use(
 
 bot.command(Commands.Register, register);
 bot.command(Commands.Scheduler, scheduler);
-bot.command(Commands.GetToken, get_token);
+bot.command(Commands.GetToken, getToken);
+bot.command(Commands.Approve, approve);
+bot.command(Commands.ForApproval, forApproval);
 
-export { TContext, bot }
+export { TTelegrafContext, bot }
