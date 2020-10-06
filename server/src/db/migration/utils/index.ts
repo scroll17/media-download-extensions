@@ -57,27 +57,26 @@ function removeMigrations(originStore: Store, migrations: string[]): Store {
 
 /** work with DB */
 function migrateAction(type: MigrateCommand.Up | MigrateCommand.Down) {
-    return function (migrations: string[], dirPath: string) {
-        return Promise.all(
-            transformStringMigrations(migrations)
-                .sort((a, b) => {
-                    return type === MigrateCommand.Down
-                        ? b.timestamp - a.timestamp
-                        : a.timestamp - b.timestamp
-                })
-                .map(async migration => {
-                    const migrationPath = path.resolve(dirPath, migration.title);
+    return async function (migrations: string[], dirPath: string) {
+        const migrationsToAction = transformStringMigrations(migrations)
+            .sort((a, b) => {
+                return type === MigrateCommand.Down
+                    ? b.timestamp - a.timestamp
+                    : a.timestamp - b.timestamp
+            })
 
-                    console.debug(`Migration ${_.upperFirst(type)}: ${migration.title}`)
+        for(let migration of migrationsToAction) {
+            const migrationPath = path.resolve(dirPath, migration.title);
 
-                    const exports = require(migrationPath);
-                    const functionToSetup = exports[type];
+            console.debug(`Migration ${_.upperFirst(type)}: ${migration.title}`)
 
-                    await functionToSetup();
+            const exports = require(migrationPath);
+            const functionToSetup = exports[type];
 
-                    return migration
-                })
-        )
+            await functionToSetup();
+        }
+
+        return migrationsToAction
     }
 }
 

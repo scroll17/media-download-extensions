@@ -7,13 +7,11 @@ services:
     tty: true
     restart: "always"
     links:
-    - database:database
     - redis:redis
     depends_on:
-      - database
       - redis
     ports:
-    - 4100:4100
+    - 4200:4200
     volumes:
     - ./server:/home/node/media-api
     entrypoint: /bin/bash
@@ -23,5 +21,6 @@ services:
     image: redis:5.0.3-alpine
     container_name: media_redis
     ports:
-    - 6381:6379
+    - 6379:6379
+    tty: true
     restart: "always"

@@ -1,4 +1,4 @@
 path=$1
 
-SET NODE_ENV=development
+export NODE_ENV='development'
 npx ts-node-dev --respawn --transpile-only "$path"

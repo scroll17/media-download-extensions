@@ -5,12 +5,12 @@ import path from "path";
 import { sql, SqlStatement } from "./sql";
 
 export class DB {
-    private constructor(private readonly _db: Database) {}
+    private constructor(private readonly _db: Database, private readonly _dbPath: string) {}
 
     static async connect(dbPath: string): Promise<DB>{
         return new Promise((resolve, reject) => {
             const dbInstance = sqlite3.cached.Database(dbPath, (err) => reject(err))
-            resolve(new DB(dbInstance))
+            resolve(new DB(dbInstance, dbPath))
         })
     }
 
@@ -21,7 +21,7 @@ export class DB {
             throw err;
         })
 
-        return new DB(dbInstance);
+        return new DB(dbInstance, dbPath);
     }
 
     /**
@@ -109,22 +109,6 @@ export class DB {
         })
     }
 
-    /**
-     *   Runs all SQL queries in the transaction and return result from callback.
-     * */
-    async transaction<TReturn = undefined>(cb: (db: this) => Promise<TReturn>) {
-        let result: TReturn;
-        try {
-            await this.exec('BEGIN');
-            result = await cb(this);
-            await this.exec('COMMIT');
-        } catch (error) {
-            await this.exec('ROLLBACK');
-            throw error;
-        }
-
-        return result;
-    }
 
     /**
      *  Close connection to database.
@@ -137,9 +121,43 @@ export class DB {
             })
         })
     }
+
+    async getClient<TReturn = undefined>(cb: (db: DB) => Promise<TReturn>) {
+        const db = await DB.connect(this._dbPath);
+
+        let result: TReturn;
+        try {
+            result = await cb(db);
+        } catch (error) {
+            console.error('SQLite error', error)
+            throw error;
+        } finally {
+            await db.close()
+        }
+
+        return result;
+    }
+
+    async getClientTransaction<TReturn = undefined>(cb: (db: DB) => Promise<TReturn>) {
+        const db = await DB.connect(this._dbPath);
+
+        let result: TReturn;
+        try {
+            await db.exec('BEGIN TRANSACTION;');
+            result = await cb(db);
+            await db.exec('COMMIT;');
+        } catch (error) {
+            await db.exec('ROLLBACK;');
+
+            console.error('SQLite error', error)
+            throw error;
+        }
+
+        return result;
+    }
 }
 
-const mainDB = DB.syncConnect(path.resolve(__dirname, 'exp', 'main'));
+const mainDB = DB.syncConnect(path.resolve(__dirname, 'exp', 'main.sqlite'));
 
 export {
     sql,

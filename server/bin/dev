@@ -1,2 +1,2 @@
-SET NODE_ENV="development"
+export NODE_ENV="development"
 npx ts-node-dev --respawn --transpileOnly ./src/index.ts

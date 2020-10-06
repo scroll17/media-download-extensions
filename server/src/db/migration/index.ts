@@ -75,6 +75,7 @@ export enum Databases {
 }
 
 const MIGRATION_TEMPLATE_PATH = path.resolve(__dirname, 'template.js')
+const MIGRATION_STORE_PATH = path.resolve(__dirname, 'migrations.json')
 
 export type Migration = { title: string; timestamp: number; };
 export type Store = { lastRun: string; migrations: Migration[] }
@@ -85,12 +86,11 @@ export async function execMigrate(cmd: MigrateCommand, DBName: Databases, paths:
         throw new Error('DB name must be not empty.')
     }
 
-    const jsonStorePath = path.resolve(__dirname, 'migrations.json');
-    const storeExist = existsSync(jsonStorePath)
+    const storeExist = existsSync(MIGRATION_STORE_PATH)
 
     let store: Migrations;
     if(storeExist) {
-        const storeJSON = await fs.readFile(jsonStorePath, { encoding: 'utf-8' });
+        const storeJSON = await fs.readFile(MIGRATION_STORE_PATH, { encoding: 'utf-8' });
         store = JSON.parse(storeJSON);
     } else {
         store = {
@@ -99,7 +99,7 @@ export async function execMigrate(cmd: MigrateCommand, DBName: Databases, paths:
                 migrations: []
             }
         }
-        await fs.writeFile(jsonStorePath, JSON.stringify(store), { encoding: 'utf-8' })
+        await fs.writeFile(MIGRATION_STORE_PATH, JSON.stringify(store), { encoding: 'utf-8' })
     }
 
     const migrationsDirPath = path.resolve(__dirname, `${DBName}-migrations`);
@@ -244,5 +244,5 @@ export async function execMigrate(cmd: MigrateCommand, DBName: Databases, paths:
         ...store,
         [DBName]: activeStore
     }
-    await fs.writeFile(jsonStorePath, JSON.stringify(storeToSave), { encoding: 'utf-8' })
+    await fs.writeFile(MIGRATION_STORE_PATH, JSON.stringify(storeToSave), { encoding: 'utf-8' })
 }

@@ -1,0 +1,10 @@
+import {sql} from "../sql";
+
+export const TOKEN_TABLE = 'Token';
+export const $TokenTable = sql.table(TOKEN_TABLE);
+
+export interface Token {
+    id: string;
+    data: string;
+    createdAt: Date;
+}
