@@ -3,7 +3,7 @@ import {PostingLocation, PostingUsertags} from "instagram-private-api/dist/types
 export const VIDEO_TABLE = 'Video';
 
 export interface Video {
-    id: string;
+    id: number;
     fileName: string;
     coverImage: string;
     caption: string;

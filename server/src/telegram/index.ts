@@ -5,14 +5,20 @@ import { checkValidUserId } from "./middleware";
 /*commands*/
 import {approve, Commands, getToken, register, scheduler} from "./commands";
 import {forApproval} from "./commands/forApproval";
+/*DB*/
+import {DB, mainDB} from "../db";
+import {Databases} from "../db/migration";
 
 interface TCustomTelegrafContext extends Context {
-    db: string
+    db: Record<Databases, DB>
 }
 
 const bot = new Telegraf<TCustomTelegrafContext>(process.env.TG_TOKEN);
 type TTelegrafContext = typeof bot['context'];
 
+bot.context.db = {
+    [Databases.Main]: mainDB
+}
 
 bot.start((ctx) => ctx.reply('Бот запущен.'))
 

@@ -3,7 +3,7 @@ import {PostingLocation, PostingUsertags} from "instagram-private-api/dist/types
 export const STORY_TABLE = 'Story';
 
 export interface Story {
-    id: string;
+    id: number;
     fileName: string;
     coverImage: string;
 

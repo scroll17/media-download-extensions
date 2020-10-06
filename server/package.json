@@ -21,7 +21,6 @@
   },
   "dependencies": {
     "instagram-private-api": "^1.42.0",
-    "install": "^0.13.0",
     "lodash": "^4.17.20",
     "npm": "^6.14.8",
     "sqlite3": "^5.0.0",

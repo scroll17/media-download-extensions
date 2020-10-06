@@ -68,6 +68,10 @@ sql.DEFAULT = wrapValue(SQL_DEFAULT_KEY)('DEFAULT');
 
 sql.table = (tableName: string) => sql.raw(`"${tableName}"`)
 
+sql.setNewValue = (field: string, value: any) => {
+    return value ? sql`${sql.raw(`"${field}"`)} = ${value}` : sql.raw(`"${field}" = "${field}"`)
+}
+
 const isDefault = <TObject>(value: TObject) => isWrapped(SQL_DEFAULT_KEY, value);
 const isRaw = <TObject>(value: TObject) => isWrapped(SQL_RAW_KEY, value);
 const isBatch = <TObject>(value: TObject) => isWrapped(SQL_BATCH_KEY, value);

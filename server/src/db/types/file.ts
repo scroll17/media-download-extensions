@@ -7,16 +7,16 @@ export enum FileType {
 }
 
 export interface File {
-    id: string;
-    userId: string;
+    id: number;
+    userId: number;
     type: FileType;
     published: number;
     approved: number;
     desiredTime: Date;
 
-    videoId: string;
-    storyId: string;
-    photoId: string;
+    videoId: number;
+    storyId: number;
+    photoId: number;
 
     createdAt: Date;
     updatedAt: Date;

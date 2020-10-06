@@ -3,7 +3,7 @@ import {PostingLocation, PostingUsertags} from "instagram-private-api/dist/types
 export const PHOTO_TABLE = 'Photo';
 
 export interface Photo {
-    id: string;
+    id: number;
     fileName: string;
     caption: string;
 
