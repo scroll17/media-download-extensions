@@ -3,5 +3,6 @@ export default {
     IG_PASSWORD: true,
     TG_TOKEN: true,
     VALID_TELEGRAM_IDS: true,
-    PORT: true
+    PORT: true,
+    REDIS_CONF: true
 }

@@ -5,7 +5,13 @@ declare global {
             IG_PASSWORD: string;
             TG_TOKEN: string;
             PORT: number,
-            VALID_TELEGRAM_IDS: number[]
+            NODE_ENV: string;
+            VALID_TELEGRAM_IDS: number[];
+            REDIS_CONF: {
+                port: number,
+                host: string,
+                password: string
+            }
         }
     }
 }
