@@ -4,16 +4,21 @@ import { IgApiClient } from 'instagram-private-api'
 import {Auth} from "./instagram/Auth";
 import {Content} from "./instagram/Content";
 import { promises as fs } from 'fs'
+import {logger} from "./logger";
 
 
 (async () => {
+    logger.info('--- SET ENV ---')
     const { setEnv } = await import("./env");
     await setEnv();
 
+    logger.info('--- BOT LAUNCH ---')
     const { bot } = await import( "./telegram");
     await bot.launch();
 
-
+    logger.info('--- SETUP SERVER ---')
+    const { setup } = await import('./app/index')
+    await setup()
 })()
 
 // const ig = new IgApiClient();

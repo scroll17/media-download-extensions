@@ -17,15 +17,14 @@ export const register: Middleware<TTelegrafContext> = async (ctx) => {
     if(userExist) {
         await ctx.reply('Вы уже зарегестрированы.')
     } else {
-       await UserModel.create.exec(
-            ctx.db.main,
-            {
-                telegramId: ctx.from?.id!,
-                name: ctx.from?.first_name!,
-                username: ctx.from?.username!
-            }
-        )
+        const data: UserModel.create.TArgs = {
+            telegramId: ctx.from?.id!,
+            name: ctx.from?.first_name!,
+            username: ctx.from?.username!,
+            chatId: ctx.chat?.id!
+        }
+       await UserModel.create.exec(ctx.db.main, data)
 
-        await ctx.reply('Вы успешно зарегестрировалтсь.')
+        await ctx.reply('Вы успешно зарегестрировались.')
     }
 }

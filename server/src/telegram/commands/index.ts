@@ -7,6 +7,7 @@ export enum Commands {
     Register = 'register',
     Scheduler = 'scheduler',
     GetToken = 'get_token',
+    GetId = 'get_id',
     Approve = 'approve',
     ForApproval = 'for_approval'
 }

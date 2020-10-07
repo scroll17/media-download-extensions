@@ -4,6 +4,7 @@ declare global {
             IG_USERNAME: string;
             IG_PASSWORD: string;
             TG_TOKEN: string;
+            PORT: number,
             VALID_TELEGRAM_IDS: number[]
         }
     }

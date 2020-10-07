@@ -8,7 +8,10 @@ module.exports.up = runInMainDB(async (db) => {
       CREATE TABLE "${USER_TABLE}" (
         "id"            INTEGER PRIMARY KEY,
         "tokenId"       INTEGER,
+        
         "telegramId"    INTEGER NOT NULL,
+        "chatId"        INTEGER NOT NULL,
+        
         "name"          TEXT    NOT NULL,
         "username"      TEXT    NOT NULL,
         
