@@ -12,16 +12,18 @@ module.exports.up = runInMainDB(async (db) => {
             "id"            INTEGER PRIMARY KEY,
             "userId"        INTEGER NOT NULL,
             "type"          TEXT    NOT NULL,
-            "published"     INTEGER NOT NULL DEFAULT 0,
-            "approved"      INTEGER NOT NULL DEFAULT 0,
+            "published"     INTEGER NOT NULL        DEFAULT 0,
+            "approved"      INTEGER NOT NULL        DEFAULT 0,
             "desiredTime"   TEXT    NOT NULL,
             
-            "videoId"       INTEGER DEFAULT NULL,
-            "storyId"       INTEGER DEFAULT NULL,
-            "photoId"       INTEGER DEFAULT NULL,
+            "messageId"     INTEGER                 DEFAULT NULL,
             
-            "createdAt"     TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
-            "updatedAt"     TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
+            "videoId"       INTEGER                 DEFAULT NULL,
+            "storyId"       INTEGER                 DEFAULT NULL,
+            "photoId"       INTEGER                 DEFAULT NULL,
+            
+            "createdAt"     TEXT    NOT NULL        DEFAULT (datetime('now', 'localtime')),
+            "updatedAt"     TEXT    NOT NULL        DEFAULT (datetime('now', 'localtime')),
             
             CHECK (datetime("desiredTime",'unixepoch') > strftime('%s','now')),
             

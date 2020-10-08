@@ -14,6 +14,8 @@ export interface File {
     approved: number;
     desiredTime: Date;
 
+    messageId: number;
+
     videoId: number;
     storyId: number;
     photoId: number;
