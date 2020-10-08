@@ -1,8 +1,9 @@
 import Redis from 'ioredis';
+import {setEnv} from "../../env";
 
-const { REDIS_CONF, NODE_ENV } = process.env;
+const { NODE_ENV } = process.env;
 
 export const redis = new Redis({
-    ...REDIS_CONF,
+    ...setEnv.REDIS_CONF,
     keyPrefix: `${NODE_ENV}:`
 });

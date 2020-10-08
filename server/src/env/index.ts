@@ -6,7 +6,18 @@ import { ProcessEnv } from "../@types/environment";
 /*other*/
 import requiredOptions from './required'
 
-export async function setEnv(): Promise<ProcessEnv> {
+interface SetEnv {
+    (): Promise<ProcessEnv>;
+    REDIS_CONF: {
+        port: number,
+        host: string,
+        password: string
+    }
+}
+
+setEnv.REDIS_CONF = {} as SetEnv['REDIS_CONF'];
+
+export async function setEnv() {
     const confPath = path.resolve(__dirname, '../../', 'conf.json');
 
     const confFile = await fs.readFile(confPath, { encoding: 'utf-8' });
@@ -17,7 +28,11 @@ export async function setEnv(): Promise<ProcessEnv> {
         .forEach(key => {
             if(!conf[key]) throw new Error(`${key} is required in conf.`)
 
-            process.env[key] = conf[key];
+            if(key === 'REDIS_CONF') {
+                setEnv.REDIS_CONF = conf[key]
+            } else {
+                process.env[key] = conf[key];
+            }
         })
 
     return conf;

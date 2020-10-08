@@ -7,11 +7,6 @@ declare global {
             PORT: number,
             NODE_ENV: string;
             VALID_TELEGRAM_IDS: number[];
-            REDIS_CONF: {
-                port: number,
-                host: string,
-                password: string
-            }
         }
     }
 }

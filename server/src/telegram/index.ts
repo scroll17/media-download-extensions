@@ -1,5 +1,5 @@
 /*external modules*/
-import { Telegraf, Context } from 'telegraf';
+import { Telegraf, Context, Extra } from 'telegraf';
 /*middlewares*/
 import { checkValidUserId } from "./middleware";
 /*commands*/
@@ -9,6 +9,7 @@ import {forApproval} from "./commands/forApproval";
 import {DB, mainDB} from "../db";
 import {Databases} from "../db/migration";
 import {getId} from "./commands/getId";
+import {approveButtons, ButtonPrefix, parseButtonData} from "./buttons";
 
 interface TCustomTelegrafContext extends Context {
     db: Record<Databases, DB>
@@ -33,5 +34,18 @@ bot.command(Commands.GetToken, getToken);
 bot.command(Commands.GetId, getId);
 // bot.command(Commands.Approve, approve);
 // bot.command(Commands.ForApproval, forApproval);
+
+
+bot.hears('test', async (ctx) => {
+    const result = await ctx.reply('test message', approveButtons(1));
+})
+
+bot.action(/approve/, async (ctx) => {
+    console.log('parse => ', parseButtonData(ctx.callbackQuery?.data!))
+
+    await ctx.reply(ctx.callbackQuery?.data!);
+})
+
+//bot.telegram.editMessageReplyMarkup(1, 1, undefined, '')
 
 export { TTelegrafContext, bot }

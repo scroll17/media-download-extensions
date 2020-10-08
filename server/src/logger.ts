@@ -1,7 +1,8 @@
 import chalk from 'chalk'
 
 export const logger = {
-    info: (arg: any) => console.log(chalk.blue(arg)),
-    error: (arg: any) => console.log(chalk.red(arg)),
-    debug: (arg: any) => console.log(chalk.green(arg)),
+    info: (message: any, ...args: any[]) => console.log(chalk.blue(message), ...args),
+    error: (message: any, ...args: any[]) => console.log(chalk.red(message), ...args),
+    debug: (message: any, ...args: any[]) => console.log(chalk.green(message), ...args),
+    warn: (message: any, ...args: any[]) => console.log(chalk.yellow(message), ...args)
 }

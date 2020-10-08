@@ -5,6 +5,7 @@ import {Auth} from "./instagram/Auth";
 import {Content} from "./instagram/Content";
 import { promises as fs } from 'fs'
 import {logger} from "./logger";
+import {redis} from "./db/redis";
 
 
 (async () => {
@@ -19,6 +20,15 @@ import {logger} from "./logger";
     logger.info('--- SETUP SERVER ---')
     const { setup } = await import('./app/index')
     await setup()
+
+    logger.info('--- CONNECT TO REDIS ---')
+    await import('./db/redis/index');
+
+    logger.info('--- IMPORT JOB WORKER ---')
+    const { default: JobWorker } = await import('./jobs/index');
+    await JobWorker.start()
+
+    await JobWorker.getQueue('download-file').add({ text: 'test' })
 })()
 
 // const ig = new IgApiClient();
