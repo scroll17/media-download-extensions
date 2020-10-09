@@ -18,7 +18,7 @@ export namespace PhotoModel {
     }
 
     export namespace create {
-        export type TArgs = Omit<Photo, 'id'>
+        export type TArgs = Omit<Photo, 'id' | 'caption'> & Partial<Pick<Photo, 'caption'>>
         export type TReturn = Photo;
         export const exec: TFunction.Insert<TArgs, TReturn> = async (client, args) => {
             const { lastID } = await client.run(

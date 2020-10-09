@@ -2,9 +2,9 @@
 import express from 'express';
 import _ from 'lodash'
 /*middlewares*/
+import {checkAccess} from "./middlewares/checkAccess";
 /*DB*/
 import {FileType} from "../db/types/file";
-import {checkAccess} from "./middlewares/checkAccess";
 import {mainDB} from "../db";
 /*models*/
 import {JobModel} from "../db/models/job";
@@ -29,51 +29,61 @@ export async function setup() {
 
     app.post<object, any, IReqBody>('/file',
         (req, res, next) => {
-            const requiredKeys: Array<keyof IReqBody> = ['time', "imgUrl", "type"];
+            const requiredKeys: Array<keyof IReqBody> = ['time', 'imgUrl', 'type'];
 
             for (let key of requiredKeys) {
                 if(_.isNil(req.body[key])) {
                     return res.status(400).send(`"${key}" required`)
                 }
 
+                switch (req.body.type) {
+                    case FileType.Video: {
+                        const haveVideoUrl = Boolean(req.body.videoUrl);
+                        if(!haveVideoUrl) {
+                            return res.status(400).send(`"videoUrl" required`)
+                        }
+
+                        break;
+                    }
+                    default: {
+                        return res.status(400).send(`invalid type`)
+                    }
+                }
+
                 req.body.time = new Date(req.body.time);
                 if(req.body.time.valueOf() < Date.now()) {
                     return res.status(400).send(`Cannot publish in back time.`)
-                }
-                // TODO _refactor all
-
-                if([FileType.Story, FileType.Video].includes(req.body.type)) {
-                    if(_.isNil(req.body.videoUrl)) {
-                        return res.status(400).send(`"videoUrl" required`)
-                    }
                 }
             }
 
             return next()
         },
         async (req, res, next) => {
-            switch (req.body.type) {
-                case FileType.Video:
-                case FileType.Story:
-                case FileType.Photo: {
-                    const delayedToPublish = req.body.time.valueOf() - Date.now();
+            const {
+                type,
+                time,
+                caption,
+                imgUrl,
+                videoUrl
+            } = req.body;
 
-                    await JobModel.create.exec(
-                        mainDB,
-                        {
-                            name: "download-file",
-                            data: {
+            const delayedToPublish = time.valueOf() - Date.now();
 
-                            }
-                        }
-                    )
-
-                    return res.send('OK')
+            await JobModel.create.exec(
+                mainDB,
+                {
+                    name: "download-file",
+                    data: {
+                        type: type,
+                        delayed: delayedToPublish,
+                        caption,
+                        imgUrl,
+                        videoUrl
+                    }
                 }
-                default: {
-                    return res.status(400).send('Invalid status')
-                }
-            }
+            )
+
+            return res.send('OK')
         }
     )
 

@@ -21,7 +21,7 @@ export namespace VideoModel {
     }
 
     export namespace create {
-        export type TArgs = Omit<Video, 'id'>
+        export type TArgs = Omit<Video, 'id' | 'caption'> & Partial<Pick<Video, 'caption'>>
         export type TReturn = Video;
         export const exec: TFunction.Insert<TArgs, TReturn> = async (client, args) => {
             const { lastID } = await client.run(

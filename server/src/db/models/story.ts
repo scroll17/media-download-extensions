@@ -112,12 +112,16 @@ export namespace StoryModel {
                 opts.link = story.link;
             }
 
-            if(story.videoId && story.imageId) {
-                const coverImage = await getPhoto.exec(client, { storyId });
-                if(!coverImage) throw new Error(`coverImage not found`);
-
+            if(story.videoId) {
                 const video = await getVideo.exec(client, { storyId })
                 if(!video) throw new Error(`video not found`)
+
+                const coverImage = await VideoModel.getPhoto.exec(
+                    client, {
+                        videoId: video.id
+                    }
+                );
+                if(!coverImage) throw new Error(`coverImage not found`);
 
                 const videoPath = VideoModel.getFilePath(video.fileName)
                 const videoFile = await fs.readFile(videoPath);
