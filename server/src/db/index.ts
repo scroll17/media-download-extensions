@@ -7,7 +7,7 @@ import { sql, SqlStatement } from "./sql";
 export class DB {
     private constructor(private readonly _db: Database, private readonly _dbPath: string) {}
 
-    static async connect(dbPath: string): Promise<DB>{
+    static async connect(dbPath: string): Promise<DB> {
         return new Promise((resolve, reject) => {
             const dbInstance = sqlite3.cached.Database(dbPath, (err) => reject(err))
             resolve(new DB(dbInstance, dbPath))
@@ -123,37 +123,42 @@ export class DB {
     }
 
     async getClient<TReturn = undefined>(cb: (db: DB) => Promise<TReturn>) {
-        const db = await DB.connect(this._dbPath);
+        return new Promise(async (resolve, reject) => {
+            const db = await DB.connect(this._dbPath);
 
-        let result: TReturn;
-        try {
-            result = await cb(db);
-        } catch (error) {
-            console.error('SQLite error', error)
-            throw error;
-        } finally {
-            await db.close()
-        }
-
-        return result;
+            db._db.serialize(async () => {
+                let result: TReturn;
+                try {
+                    result = await cb(db);
+                    resolve(result)
+                } catch (error) {
+                    console.error('SQLite error', error)
+                    reject(error);
+                }
+            })
+        })
     }
 
     async getClientTransaction<TReturn = undefined>(cb: (db: DB) => Promise<TReturn>) {
-        const db = await DB.connect(this._dbPath);
+        return new Promise(async (resolve, reject) => {
+            const db = await DB.connect(this._dbPath);
 
-        let result: TReturn;
-        try {
-            await db.exec('BEGIN TRANSACTION;');
-            result = await cb(db);
-            await db.exec('COMMIT;');
-        } catch (error) {
-            await db.exec('ROLLBACK;');
+            db._db.serialize(async () => {
+                let result: TReturn;
+                try {
+                    await db.exec('BEGIN TRANSACTION;');
+                    result = await cb(db);
+                    await db.exec('COMMIT;');
 
-            console.error('SQLite error', error)
-            throw error;
-        }
+                    resolve(result);
+                } catch (error) {
+                    await db.exec('ROLLBACK;');
 
-        return result;
+                    console.error('SQLite error', error)
+                    reject(error);
+                }
+            })
+        })
     }
 }
 

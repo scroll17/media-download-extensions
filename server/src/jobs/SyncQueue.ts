@@ -41,16 +41,15 @@ export class SyncQueue<T = any> extends Queue<T> {
     }
 
     async changeJobStatus(jobId: JobId, status: JobStatus, error?: Error) {
-       // TODO
-        // return mainDB.getClient(client => {
-        //     const jobData: JobModel.update.TArgs = {
-        //         id: jobId as string,
-        //         status: status
-        //     };
-        //
-        //     if(error) _.set(jobData, 'error', error)
-        //
-        //     return JobModel.update.exec(client, jobData, { sql, events: [] });
-        // });
+        return mainDB.getClient(client => {
+            const jobData: JobModel.update.TArgs = {
+                externalId: String(jobId),
+                status: status
+            };
+
+            if(error) _.set(jobData, 'error', error)
+
+            return JobModel.update.exec(client, jobData);
+        });
     }
 }

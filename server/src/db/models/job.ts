@@ -1,5 +1,6 @@
 /*external modules*/
 import {JobOptions} from "bull";
+import _ from 'lodash'
 /*DB*/
 import {sql} from "../sql";
 import {$JobTable, Job, JobStatus} from "../types/job";
@@ -46,22 +47,36 @@ export namespace JobModel {
     }
 
     export namespace update {
-        export type TArgs = Pick<Job, 'id'> & Partial<Pick<Job, 'status' | 'data' | 'error' | 'externalId'>>
+        export type TArgs = (
+            Pick<Job, 'id'> | Pick<Job, 'externalId'>
+        ) & (Partial<Pick<Job, 'status' | 'data' | 'error' | 'externalId'>>)
         export type TReturn = Job
         export const exec: TFunction.Update<TArgs, TReturn> = async (client, args) => {
+            let findByCondition;
+            if('id' in args) {
+                findByCondition = sql`"id" = ${args.id}`
+            } else {
+                findByCondition = sql`"externalId" = ${args.externalId}`
+            }
+
             await client.run(
                 sql`
                     UPDATE ${$JobTable}
                     SET "status" = ${sql.setNewValue("status", args.status)},
                         "data" = ${sql.setNewValue("data", args.data && JSON.stringify(args.data))},
-                        "error" = ${sql.setNewValue("error", args.error, true)},
-                        "externalId" = ${sql.setNewValue("externalId", args.externalId)}
-                    WHERE "id" = ${args.id}
+                        "error" = ${sql.setNewValue("error", args.error && JSON.stringify(args.error), true)},
+                        "externalId" = ${sql.setNewValue("externalId", args.externalId, true)}
+                    WHERE ${findByCondition}
                       AND ("status" != ${JobStatus.Completed} OR ${args.status} != ${JobStatus.Active})
                 `
             )
 
-            const job = await findById.exec(client, { jobId: args.id });
+            let job;
+            if('id' in args) {
+                job = await findById.exec(client, { jobId: args.id });
+            } else {
+                job = await findBy.exec(client, { externalId: args.externalId });
+            }
 
             if(!job) return
 
@@ -120,20 +135,33 @@ export namespace JobModel {
     }
 
     export namespace findBy {
-        export type TArgs = Pick<Job, 'name'> & Partial<Pick<Job, 'status'>>
+        export type TArgs = Partial<Pick<Job, 'name' | 'status' | 'externalId'>>
         export type TReturn = Job;
         export const exec: TFunction.SelectOne<TArgs, TReturn> = async (client, args) => {
+            if(_.isEmpty(args)) return
+
             let statusWhereBlock = sql.raw`true`;
             if(args.status) {
                 statusWhereBlock = sql`"status" = ${args.status}`;
+            }
+
+            let nameWhereBlock = sql.raw`true`
+            if(args.name) {
+                nameWhereBlock = sql`"name" = ${args.name}`;
+            }
+
+            let externalIdWhereBlock = sql.raw`true`
+            if(args.externalId) {
+                externalIdWhereBlock = sql`"externalId" = ${args.externalId}`;
             }
 
             const job = await client.get<Job>(
                 sql`
                     SELECT * 
                     FROM ${$JobTable}
-                    WHERE "name" = ${args.name}
+                    WHERE ${nameWhereBlock}
                       AND ${statusWhereBlock}
+                      AND ${externalIdWhereBlock}
                 `
             )
 
