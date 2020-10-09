@@ -1,14 +1,14 @@
 import {PostingLocation, PostingUsertags} from "instagram-private-api/dist/types/posting.options";
+import {sql} from "../sql";
 
 export const STORY_TABLE = 'Story';
+export const $StoryTable = sql.table(STORY_TABLE);
 
 export interface Story {
     id: number;
-    fileName: string;
-    coverImage: string;
+    videoId: number;
+    imageId: number;
 
     caption?: string;
     link?: string;
-    usertags?: PostingUsertags;
-    location?: PostingLocation;
 }

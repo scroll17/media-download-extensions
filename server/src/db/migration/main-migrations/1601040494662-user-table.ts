@@ -7,6 +7,7 @@ module.exports.up = runInMainDB(async (db) => {
     await db.run(`
       CREATE TABLE "${USER_TABLE}" (
         "id"            INTEGER PRIMARY KEY,
+        
         "tokenId"       INTEGER,
         
         "telegramId"    INTEGER NOT NULL,

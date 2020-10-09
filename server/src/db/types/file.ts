@@ -1,4 +1,7 @@
+import {sql} from "../sql";
+
 export const FILE_TABLE = 'File';
+export const $FileTable = sql.table(FILE_TABLE);
 
 export enum FileType {
     Video = 'video',

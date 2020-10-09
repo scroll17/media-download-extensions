@@ -8,7 +8,7 @@ module.exports.up = runInMainDB(async (db) => {
         "id"              INTEGER PRIMARY KEY,
         "data"            TEXT    NOT NULL,
         
-        "createdAt"       TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
+        "createdAt"       TEXT    NOT NULL      DEFAULT (datetime('now', 'localtime')),
         
         UNIQUE ("data")
       );

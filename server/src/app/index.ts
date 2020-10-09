@@ -5,13 +5,16 @@ import _ from 'lodash'
 /*DB*/
 import {FileType} from "../db/types/file";
 import {checkAccess} from "./middlewares/checkAccess";
+import {mainDB} from "../db";
 /*models*/
+import {JobModel} from "../db/models/job";
 /*other*/
 
 interface IReqBody {
     time: Date,
     imgUrl: string;
     videoUrl?: string;
+    caption?: string;
     type: FileType;
 }
 
@@ -34,6 +37,10 @@ export async function setup() {
                 }
 
                 req.body.time = new Date(req.body.time);
+                if(req.body.time.valueOf() < Date.now()) {
+                    return res.status(400).send(`Cannot publish in back time.`)
+                }
+                // TODO _refactor all
 
                 if([FileType.Story, FileType.Video].includes(req.body.type)) {
                     if(_.isNil(req.body.videoUrl)) {
@@ -46,6 +53,23 @@ export async function setup() {
         },
         async (req, res, next) => {
             switch (req.body.type) {
+                case FileType.Video:
+                case FileType.Story:
+                case FileType.Photo: {
+                    const delayedToPublish = req.body.time.valueOf() - Date.now();
+
+                    await JobModel.create.exec(
+                        mainDB,
+                        {
+                            name: "download-file",
+                            data: {
+
+                            }
+                        }
+                    )
+
+                    return res.send('OK')
+                }
                 default: {
                     return res.status(400).send('Invalid status')
                 }

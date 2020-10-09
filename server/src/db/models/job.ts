@@ -28,16 +28,18 @@ export namespace JobModel {
             let job = await findById.exec(client, { jobId: lastID });
             if(!job) throw new Error('Job not found')
 
-            const queue = jobWorker.getQueue(job.name);
 
+            const queue = jobWorker.getQueue(job.name);
             if (queue) {
-                const externalJob = await queue.add(job.data, args.options ?? {});
+                const externalJob = await queue.add(args.data, args.options ?? {});
 
                 job = await update.exec(
                     client,
                     {
                         id: job.id,
-                        externalId: String(externalJob.id)
+                        data: {
+                            externalId: String(externalJob.id)
+                        }
                     }
                 );
             }
@@ -49,7 +51,9 @@ export namespace JobModel {
     export namespace update {
         export type TArgs = (
             Pick<Job, 'id'> | Pick<Job, 'externalId'>
-        ) & (Partial<Pick<Job, 'status' | 'data' | 'error' | 'externalId'>>)
+        ) & {
+            data: Partial<Pick<Job, 'status' | 'data' | 'error' | 'externalId'>>
+        }
         export type TReturn = Job
         export const exec: TFunction.Update<TArgs, TReturn> = async (client, args) => {
             let findByCondition;
@@ -59,15 +63,16 @@ export namespace JobModel {
                 findByCondition = sql`"externalId" = ${args.externalId}`
             }
 
+            const { data } = args;
             await client.run(
                 sql`
                     UPDATE ${$JobTable}
-                    SET "status" = ${sql.setNewValue("status", args.status)},
-                        "data" = ${sql.setNewValue("data", args.data && JSON.stringify(args.data))},
-                        "error" = ${sql.setNewValue("error", args.error && JSON.stringify(args.error), true)},
-                        "externalId" = ${sql.setNewValue("externalId", args.externalId, true)}
+                    SET "status" = ${sql.setNewValue("status", data.status)},
+                        "data" = ${sql.setNewValue("data", data.data && JSON.stringify(args.data))},
+                        "error" = ${sql.setNewValue("error", data.error && String(data.error.stack), true)},
+                        "externalId" = ${sql.setNewValue("externalId", data.externalId, true)}
                     WHERE ${findByCondition}
-                      AND ("status" != ${JobStatus.Completed} OR ${args.status} != ${JobStatus.Active})
+                      AND ("status" != ${JobStatus.Completed} OR ${data.status} != ${JobStatus.Active})
                 `
             )
 
@@ -124,7 +129,7 @@ export namespace JobModel {
         export const exec: TFunction.SelectOne<TArgs, TReturn> = async (client, args) => {
             const job = await client.get<Job>(
                 sql`
-                    SELECT * 
+                    SELECT *
                     FROM ${$JobTable}
                     WHERE "id" = ${args.jobId}
                 `
@@ -157,7 +162,7 @@ export namespace JobModel {
 
             const job = await client.get<Job>(
                 sql`
-                    SELECT * 
+                    SELECT *
                     FROM ${$JobTable}
                     WHERE ${nameWhereBlock}
                       AND ${statusWhereBlock}

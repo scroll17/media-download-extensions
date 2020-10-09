@@ -2,10 +2,11 @@
 import Queue, {JobId, JobOptions} from "bull";
 import _ from 'lodash'
 /*DB*/
-import { sql, mainDB } from "../db";
+import {mainDB} from "../db";
 import {JobStatus} from "../db/types/job";
 /*models*/
 import {JobModel} from "../db/models/job";
+import {logger} from "../logger";
 /*other*/
 
 export type SyncQueueOptions = Queue.QueueOptions & {
@@ -44,10 +45,12 @@ export class SyncQueue<T = any> extends Queue<T> {
         return mainDB.getClient(client => {
             const jobData: JobModel.update.TArgs = {
                 externalId: String(jobId),
-                status: status
+                data: {
+                    status: status
+                }
             };
 
-            if(error) _.set(jobData, 'error', error)
+            if(error) _.set(jobData, ['data', 'error'], error)
 
             return JobModel.update.exec(client, jobData);
         });

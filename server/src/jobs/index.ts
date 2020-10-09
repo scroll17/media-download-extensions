@@ -38,13 +38,12 @@ export class JobWorker {
         this.prefix = `${this.config.name}:bull`
     }
 
-    async addQueue<T>(name: string, consumer: Consumer<T>, opts: SyncQueueOptions): Promise<SyncQueue<T>> {
+    addQueue<T>(name: string, consumer: Consumer<T>, opts: SyncQueueOptions): SyncQueue<T> {
         const queue = (this.queues[name] = new SyncQueue<T>(name, opts));
 
         queue.process(10, consumer)
         queue.on('failed', (job, jobError) => {
-            this.logger.error(`${queue.name} job failed`);
-            this.logger.error(jobError);
+            this.logger.error(`${queue.name} job failed => `, jobError);
         });
 
         this.logger.debug(`Queue "${name}" added.`);
@@ -59,7 +58,7 @@ export class JobWorker {
     }
 
     async start() {
-        this.logger.debug('Job workers starting..');
+        this.logger.info('--- JOB WORKERS STARTING.. ---');
 
         const queueOpts: SyncQueueOptions = {
             redis: this.config.redis,
@@ -81,13 +80,13 @@ export class JobWorker {
         /**
          * Download video and photo from instagram
          */
-        await this.addQueue<DownloadFileOptions>(
+        this.addQueue<DownloadFileOptions>(
             'download-file',
             downloadFileConsumer,
             queueOpts
         )
 
-        this.logger.debug('Job workers started.');
+        this.logger.info('--- JOB WORKERS STARTED. ---');
     }
 
     async stop() {

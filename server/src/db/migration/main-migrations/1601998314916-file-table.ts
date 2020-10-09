@@ -1,5 +1,5 @@
 import { runInMainDB } from "../index";
-import {FILE_TABLE} from "../../types/file";
+import {FILE_TABLE, FileType} from "../../types/file";
 import {USER_TABLE} from "../../types/user";
 import {VIDEO_TABLE} from "../../types/video";
 import {STORY_TABLE} from "../../types/story";
@@ -10,7 +10,9 @@ module.exports.up = runInMainDB(async (db) => {
     await db.run(`
         CREATE TABLE ${FILE_TABLE} (
             "id"            INTEGER PRIMARY KEY,
+            
             "userId"        INTEGER NOT NULL,
+            
             "type"          TEXT    NOT NULL,
             "published"     INTEGER NOT NULL        DEFAULT 0,
             "approved"      INTEGER NOT NULL        DEFAULT 0,

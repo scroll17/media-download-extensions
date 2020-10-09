@@ -1,12 +1,4 @@
-
-import http from 'http';
-import { IgApiClient } from 'instagram-private-api'
-import {Auth} from "./instagram/Auth";
-import {Content} from "./instagram/Content";
-import { promises as fs } from 'fs'
 import {logger} from "./logger";
-import {redis} from "./db/redis";
-
 
 (async () => {
     logger.info('--- SET ENV ---')
@@ -28,7 +20,25 @@ import {redis} from "./db/redis";
     const { default: JobWorker } = await import('./jobs/index');
     await JobWorker.start()
 
-    await JobWorker.getQueue('download-file').add({ text: 'test' })
+    // const {JobModel} = await import("./db/models/job");
+    // const {mainDB} = await import("./db");
+    //
+    // try {
+    //     await JobModel.create.exec(
+    //         mainDB,
+    //         {
+    //             name: 'download-file',
+    //             data: {
+    //                 text: 'test'
+    //             }
+    //         }
+    //     )
+    // } catch (e) {
+    //     logger.error('--------------------------- ERROR ---------------------')
+    //     console.trace(e)
+    // }
+    //
+    // //await JobWorker.getQueue('download-file').add({ text: 'test' })
 })()
 
 // const ig = new IgApiClient();
