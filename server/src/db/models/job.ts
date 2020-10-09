@@ -50,7 +50,7 @@ export namespace JobModel {
 
     export namespace update {
         export type TArgs = (
-            Pick<Job, 'id'> | Pick<Job, 'externalId'>
+            Pick<Job, 'id'> | Required<Pick<Job, 'externalId'>>
         ) & {
             data: Partial<Pick<Job, 'status' | 'data' | 'error' | 'externalId'>>
         }
@@ -88,7 +88,7 @@ export namespace JobModel {
             const queue = jobWorker.getQueue(job.name);
 
             if (queue) {
-                const queueJob = await queue.getJob(job.externalId);
+                const queueJob = await queue.getJob(job.externalId!);
                 await queueJob?.update(job.data);
             }
 

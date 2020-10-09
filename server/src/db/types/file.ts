@@ -12,16 +12,18 @@ export enum FileType {
 export interface File {
     id: number;
     userId: number;
+
     type: FileType;
+
     published: number;
     approved: number;
     desiredTime: Date;
 
-    messageId: number;
+    messageId?: number;
 
-    videoId: number;
-    storyId: number;
-    photoId: number;
+    videoId?: number;
+    storyId?: number;
+    photoId?: number;
 
     createdAt: Date;
     updatedAt: Date;

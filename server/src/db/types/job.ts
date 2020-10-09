@@ -24,7 +24,7 @@ export interface Job<TData = Record<string, any>> {
     data: Record<string, any>;
     error?: string
 
-    externalId: string;
+    externalId?: string;
 
     createdAt: Date;
     updatedAt: Date;

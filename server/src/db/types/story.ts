@@ -4,11 +4,9 @@ import {sql} from "../sql";
 export const STORY_TABLE = 'Story';
 export const $StoryTable = sql.table(STORY_TABLE);
 
-export interface Story {
+export type Story = {
     id: number;
-    videoId: number;
-    imageId: number;
 
     caption?: string;
     link?: string;
-}
+} & ({ videoId?: number; } | { imageId?: number;})
