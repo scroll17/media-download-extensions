@@ -19,7 +19,7 @@ export interface File {
     approved: number;
     desiredTime: Date;
 
-    messageId?: number;
+    messageIds?: string;
 
     videoId?: number;
     storyId?: number;

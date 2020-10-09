@@ -1,4 +1,5 @@
 /*external modules*/
+import moment from 'moment'
 /*DB*/
 import {sql} from "../sql";
 import {$FileTable, File} from "../types/file";
@@ -7,37 +8,55 @@ import { TFunction } from '@server/types';
 
 export namespace FileModel {
     export namespace create {
-        export type TArgs = Omit<File, 'id' | 'published' | 'approved' | 'messageId' | 'createdAt' | 'updatedAt'>
+        export type TArgs = Omit<File, 'id' | 'published' | 'approved' | 'messageIds' | 'createdAt' | 'updatedAt'>
         export type TReturn = File;
         export const exec: TFunction.Insert<TArgs, TReturn> = async (client, args) => {
+            const { videoId, storyId, photoId } = args;
+
+            const videoIdField = sql.insertField("videoId", videoId)
+            const storyIdField = sql.insertField("storyId", storyId)
+            const photoIdField = sql.insertField("photoId", photoId)
+
+            const [vComm, sComm, pComm] = [
+                sql.comm(videoId),
+                sql.comm(storyId),
+                sql.comm(photoId)
+            ]
+
             const { lastID } = await client.run(
                 sql`
                     INSERT INTO ${$FileTable} (
                         "userId",
                         "type",
-                        "desiredTime",
-                        "videoId",                       
-                        "storyId",                       
-                        "photoId"                       
+                        "desiredTime"
+                            ${vComm}
+                        ${videoIdField}
+                            ${sComm}        
+                        ${storyIdField}
+                            ${pComm}
+                        ${photoIdField}                                   
                     ) VALUES (
                         ${args.userId},
                         ${args.type},
-                        ${args.desiredTime.toString()},
-                        ${args.videoId},
-                        ${args.storyId},
-                        ${args.photoId}
+                        ${moment(args.desiredTime).format('YYYY-DD-MM HH:mm:ss')}
+                            ${vComm}
+                        ${sql.insertFieldValue(args.videoId)}
+                            ${sComm}
+                        ${sql.insertFieldValue(args.storyId)}
+                            ${pComm}
+                        ${sql.insertFieldValue(args.photoId)}
                     )
                 `
             );
 
-            return findById.exec(client, { jobId: lastID });
+            return findById.exec(client, { fileId: lastID });
         }
     }
 
     export namespace update {
         export type TArgs = {
             id: File['id'],
-            data: Partial<Pick<File, 'published' | 'approved' | 'messageId'>>
+            data: Partial<Pick<File, 'published' | 'approved'>> & { messageIds: number[] }
         }
         export type TReturn = File
         export const exec: TFunction.Update<TArgs, TReturn> = async (client, args) => {
@@ -48,7 +67,7 @@ export namespace FileModel {
                     UPDATE ${$FileTable}
                     SET "published" = ${sql.setNewValue("published", data.published)},
                         "approved" = ${sql.setNewValue("approved", data.approved)},
-                        "messageId" = ${sql.setNewValue("messageId", data.messageId)}
+                        "messageIds" = ${sql.setNewValue("messageIds", data.messageIds && JSON.stringify(data.messageIds))}
                     WHERE "id" = ${args.id}
                 `
             )

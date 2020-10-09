@@ -12,10 +12,12 @@ interface SetEnv {
         port: number,
         host: string,
         password: string
-    }
+    },
+    VALID_TELEGRAM_IDS: number[]
 }
 
 setEnv.REDIS_CONF = {} as SetEnv['REDIS_CONF'];
+setEnv.VALID_TELEGRAM_IDS = [] as SetEnv['VALID_TELEGRAM_IDS'];
 
 export async function setEnv() {
     const confPath = path.resolve(__dirname, '../../', 'conf.json');
@@ -28,10 +30,19 @@ export async function setEnv() {
         .forEach(key => {
             if(!conf[key]) throw new Error(`${key} is required in conf.`)
 
-            if(key === 'REDIS_CONF') {
-                setEnv.REDIS_CONF = conf[key]
-            } else {
-                process.env[key] = conf[key];
+            switch (key) {
+                case 'VALID_TELEGRAM_IDS': {
+                    setEnv.VALID_TELEGRAM_IDS = conf[key]
+                    break;
+                }
+                case 'REDIS_CONF': {
+                    setEnv.REDIS_CONF = conf[key]
+                    break;
+                }
+                default: {
+                    process.env[key] = conf[key];
+                    break;
+                }
             }
         })
 

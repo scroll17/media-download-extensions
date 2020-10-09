@@ -68,7 +68,7 @@ sql.batch = wrapValue(SQL_BATCH_KEY);
 sql.DEFAULT = wrapValue(SQL_DEFAULT_KEY)('DEFAULT');
 
 sql.table = (tableName: string) => sql.raw(`"${tableName}"`)
-
+sql.comm = (exist: any) => exist ? sql.raw(',') : sql.raw('')
 sql.setNewValue = (field: string, value: any, nullable = false) => {
     if (_.isNull(value) && nullable) {
         return null;
@@ -76,6 +76,22 @@ sql.setNewValue = (field: string, value: any, nullable = false) => {
         return sql`COALESCE(${value}, ${sql.raw(`"${field}"`)})`;
     }
 }
+
+sql.insertField = (fieldName: string, exists: any) => {
+    if(exists) {
+        return sql.raw(`"${fieldName}"`)
+    } else {
+        return sql.raw('')
+    }
+}
+sql.insertFieldValue = (value: string | number | undefined) => {
+    if(value) {
+        return sql`${value}`
+    } else {
+        return sql.raw('')
+    }
+}
+
 const isDefault = <TObject>(value: TObject) => isWrapped(SQL_DEFAULT_KEY, value);
 const isRaw = <TObject>(value: TObject) => isWrapped(SQL_RAW_KEY, value);
 const isBatch = <TObject>(value: TObject) => isWrapped(SQL_BATCH_KEY, value);

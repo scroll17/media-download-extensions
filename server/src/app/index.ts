@@ -11,11 +11,12 @@ import {JobModel} from "../db/models/job";
 /*other*/
 
 interface IReqBody {
-    time: Date,
+    desiredTime: Date,
     imgUrl: string;
     videoUrl?: string;
     caption?: string;
     type: FileType;
+    userId: string;
 }
 
 export async function setup() {
@@ -29,29 +30,24 @@ export async function setup() {
 
     app.post<object, any, IReqBody>('/file',
         (req, res, next) => {
-            const requiredKeys: Array<keyof IReqBody> = ['time', 'imgUrl', 'type'];
+            const requiredKeys: Array<keyof IReqBody> = ['desiredTime', 'imgUrl', 'type'];
 
             for (let key of requiredKeys) {
                 if(_.isNil(req.body[key])) {
                     return res.status(400).send(`"${key}" required`)
                 }
 
-                switch (req.body.type) {
-                    case FileType.Video: {
-                        const haveVideoUrl = Boolean(req.body.videoUrl);
-                        if(!haveVideoUrl) {
-                            return res.status(400).send(`"videoUrl" required`)
-                        }
-
-                        break;
-                    }
-                    default: {
-                        return res.status(400).send(`invalid type`)
-                    }
+                const isValidType = Object.values(FileType).some(type => type === req.body.type);
+                if(!isValidType) {
+                    return res.status(400).send(`invalid type`)
                 }
 
-                req.body.time = new Date(req.body.time);
-                if(req.body.time.valueOf() < Date.now()) {
+                if(req.body.type === FileType.Video && !req.body.videoUrl) {
+                    return res.status(400).send(`"videoUrl" required`)
+                }
+
+                req.body.desiredTime = new Date(req.body.desiredTime);
+                if(req.body.desiredTime.valueOf() < Date.now()) {
                     return res.status(400).send(`Cannot publish in back time.`)
                 }
             }
@@ -59,27 +55,11 @@ export async function setup() {
             return next()
         },
         async (req, res, next) => {
-            const {
-                type,
-                time,
-                caption,
-                imgUrl,
-                videoUrl
-            } = req.body;
-
-            const delayedToPublish = time.valueOf() - Date.now();
-
             await JobModel.create.exec(
                 mainDB,
                 {
                     name: "download-file",
-                    data: {
-                        type: type,
-                        delayed: delayedToPublish,
-                        caption,
-                        imgUrl,
-                        videoUrl
-                    }
+                    data: req.body
                 }
             )
 

@@ -4,6 +4,9 @@ package-lock.json
 .idea/
 conf.json
 
+media/images/*
+media/videos/*
+
 # DB
 src/db/exp/*
 src/db/migration/migrations.json

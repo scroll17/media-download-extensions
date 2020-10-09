@@ -27,7 +27,8 @@ export class JobWorker {
         redis: QueueOptions['redis']
     }
     readonly queues: Record<string, SyncQueue> = {};
-    readonly defaultJobOptions: JobOptions = { attempts: 3 };
+    // TODO _
+    readonly defaultJobOptions: JobOptions = { attempts: 1 };
 
     constructor() {
         this.logger = logger;

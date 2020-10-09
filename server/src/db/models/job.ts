@@ -69,7 +69,7 @@ export namespace JobModel {
                     UPDATE ${$JobTable}
                     SET "status" = ${sql.setNewValue("status", data.status)},
                         "data" = ${sql.setNewValue("data", data.data && JSON.stringify(args.data))},
-                        "error" = ${sql.setNewValue("error", data.error && String(data.error.stack), true)},
+                        "error" = ${sql.setNewValue("error", data.error && String(data.error), true)},
                         "externalId" = ${sql.setNewValue("externalId", data.externalId, true)}
                     WHERE ${findByCondition}
                       AND ("status" != ${JobStatus.Completed} OR ${data.status} != ${JobStatus.Active})
@@ -114,7 +114,7 @@ export namespace JobModel {
                 const queue = jobWorker.getQueue(job.name);
 
                 if (queue) {
-                    const queueJob = await queue.getJob(job.externalId);
+                    const queueJob = await queue.getJob(job.externalId!);
                     await queueJob?.remove();
                 }
             }

@@ -10,6 +10,7 @@ import {DB, mainDB} from "../db";
 import {Databases} from "../db/migration";
 import {getId} from "./commands/getId";
 import {approveButtons, ButtonPrefix, parseButtonData} from "./buttons";
+import {PhotoModel} from "../db/models/photo";
 
 interface TCustomTelegrafContext extends Context {
     db: Record<Databases, DB>
@@ -24,9 +25,7 @@ bot.context.db = {
 
 bot.start((ctx) => ctx.reply('Бот запущен.'))
 
-bot.use(
-    checkValidUserId
-)
+bot.use(checkValidUserId)
 
 bot.command(Commands.Register, register);
 bot.command(Commands.Scheduler, scheduler);
@@ -39,13 +38,25 @@ bot.command(Commands.GetId, getId);
 bot.hears('test', async (ctx) => {
     const result = await ctx.reply('test message', approveButtons(1));
 })
+bot.hears('photo', async (ctx) => {
+    await ctx.replyWithPhoto(
+        {
+            source: PhotoModel.getFilePath('1602280651914'),
+        },
+        {
+            caption: `${'денис'} хочет опубликовать`,
+            ...approveButtons(5),
+            disable_web_page_preview: undefined
+        }
+    )
+})
+
+
 
 bot.action(/approve/, async (ctx) => {
     console.log('parse => ', parseButtonData(ctx.callbackQuery?.data!))
 
     await ctx.reply(ctx.callbackQuery?.data!);
 })
-
-//bot.telegram.editMessageReplyMarkup(1, 1, undefined, '')
 
 export { TTelegrafContext, bot }

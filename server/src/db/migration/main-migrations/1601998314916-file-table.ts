@@ -18,7 +18,7 @@ module.exports.up = runInMainDB(async (db) => {
             "approved"      INTEGER NOT NULL        DEFAULT 0,
             "desiredTime"   TEXT    NOT NULL,
             
-            "messageId"     INTEGER                 DEFAULT NULL,
+            "messageIds"    TEXT                    DEFAULT '[]',
             
             "videoId"       INTEGER                 DEFAULT NULL,
             "storyId"       INTEGER                 DEFAULT NULL,
@@ -26,8 +26,6 @@ module.exports.up = runInMainDB(async (db) => {
             
             "createdAt"     TEXT    NOT NULL        DEFAULT (datetime('now', 'localtime')),
             "updatedAt"     TEXT    NOT NULL        DEFAULT (datetime('now', 'localtime')),
-            
-            CHECK (datetime("desiredTime",'unixepoch') > strftime('%s','now')),
             
             FOREIGN KEY ("userId")
                REFERENCES ${USER_TABLE}("id")

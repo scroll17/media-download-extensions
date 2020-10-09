@@ -48,6 +48,7 @@ export const checkAccess: RequestHandler = async (req, res, next) => {
         return res.status(403).send("Invalid token")
     }
 
-    res.send("OK!")
-    next()
+    req.body.userId = userId;
+
+    return next()
 }

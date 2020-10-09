@@ -2,18 +2,29 @@
 import {Job} from 'bull';
 import axios from 'axios'
 import fs from 'fs'
+import _ from 'lodash';
 /*DB*/
 import {mainDB} from "../../db";
 import {FileType} from "../../db/types/file";
+import {Photo} from "../../db/types/photo";
+import {Video} from "../../db/types/video";
+import {Story} from "../../db/types/story";
 /*models*/
 import {VideoModel} from "../../db/models/video";
 import {StoryModel} from "../../db/models/story";
 import {PhotoModel} from "../../db/models/photo";
+import {FileModel} from "../../db/models/file";
+import {UserModel} from "../../db/models/user";
+/*telegram*/
+import {bot} from "../../telegram";
+import {approveButtons} from "../../telegram/buttons";
 /*other*/
 import {logger} from '../../logger';
+import {setEnv} from "../../env";
 
 export type DownloadFileOptions = {
-    delayed: number;
+    desiredTime: Date;
+    userId: string;
     imgUrl: string;
     caption?: string;
     type: FileType.Photo | FileType.Story;
@@ -29,23 +40,32 @@ export async function downloadFileConsumer(
 
     logger.info(`Started: ${scope}.`, job.data);
 
-    const { type, imgUrl, caption, videoUrl } = job.data;
+    const {
+        imgUrl,
+        caption,
+        videoUrl,
+        userId
+    } = job.data;
 
     await mainDB.getClientTransaction(async client => {
-        switch (type) {
+        let photo: Photo | undefined;
+        let video: Video & { imgFilePath: string } | undefined;
+        let story: Story & { imgFilePath: string } | undefined;
+
+        switch (job.data.type) {
             case FileType.Photo: {
                 const imgFileName = Date.now().toString();
 
                 const imgFilePath = PhotoModel.getFilePath(imgFileName);
                 await downloadFile(imgUrl, imgFilePath)
 
-                const photo = await PhotoModel.create.exec(
+                photo = await PhotoModel.create.exec(
                     client, {
                         fileName: imgFileName,
                         caption
                     }
                 )
-                // TODO _
+                if(!photo) throw new Error(`photo not created`)
 
                 break;
             }
@@ -66,7 +86,7 @@ export async function downloadFileConsumer(
                 const videoFilePath = VideoModel.getFilePath(videoFileName);
                 await downloadFile(videoUrl, videoFilePath)
 
-                const video = await VideoModel.create.exec(
+                const localVideo = await VideoModel.create.exec(
                     client,
                     {
                         imageId: photo.id,
@@ -74,7 +94,12 @@ export async function downloadFileConsumer(
                         caption
                     }
                 )
-                // TODO _
+                if(!localVideo) throw new Error(`video not created`)
+
+                video = {
+                    ...localVideo,
+                    imgFilePath
+                }
 
                 break;
             }
@@ -109,19 +134,75 @@ export async function downloadFileConsumer(
                     )
                     if(!video) throw new Error(`video not created`)
 
-                    storyData.videoId = video.id;
+                    _.set(storyData, 'videoId', video.id)
                 } else {
-                    storyData.imageId = photo.id;
+                    _.set(storyData, 'imageId', photo.id)
                 }
 
+                const localStory = await StoryModel.create.exec(client, storyData)
+                if(!localStory) throw new Error(`story not created`)
 
-                const story = await StoryModel.create.exec(client, storyData)
-
-                // TODO _
+                story = {
+                    ...localStory,
+                    imgFilePath
+                }
 
                 break
             }
         }
+
+        const fileData: FileModel.create.TArgs = {
+            ..._.pick(job.data, ['type', 'desiredTime']),
+            userId: Number(userId),
+            photoId: photo?.id,
+            videoId: video?.id,
+            storyId: story?.id
+        }
+        const file = await FileModel.create.exec(client, fileData);
+        if(!file) throw new Error(`file mot created`);
+
+        let filePath: string | undefined;
+        if(photo) {
+            filePath = PhotoModel.getFilePath(photo.fileName)
+        } else {
+            filePath = (video && video.imgFilePath) || (story && story.imgFilePath)
+        }
+
+        const mainUser = (await UserModel.findById.exec(client, { userId: Number(userId) }))!
+
+        const instagramPageMembers = setEnv.VALID_TELEGRAM_IDS;
+        const messageIds = await Promise.all(
+            _.map(instagramPageMembers, async memberId => {
+                const user = memberId === mainUser.telegramId
+                    ? mainUser
+                    : await UserModel.findByTGId.exec(client, { telegramId: memberId })
+                if(!user) return
+
+                const result = await bot.telegram.sendPhoto(
+                    user.chatId,
+                    {
+                        source: filePath!
+                    },
+                    {
+                        caption: `"${mainUser.name}" хочет опубликовать (${job.data.type})`,
+                        ...approveButtons(file.id),
+                        disable_web_page_preview: undefined
+                    }
+                )
+
+                return result.message_id
+            })
+        )
+
+        await FileModel.update.exec(
+            client,
+            {
+                id: file.id,
+                data: {
+                    messageIds: messageIds as number[]
+                }
+            }
+        )
     })
 
     logger.info(`Completed: ${scope}.`, job.data);
@@ -150,7 +231,7 @@ async function downloadFile(url: string, filePath: string): Promise<string> {
         file.on("error", err => {
             file.close();
 
-            if (err.code === "EEXIST") {
+            if (_.get(err, 'code') === "EEXIST") {
                 reject("File already exists");
             } else {
                 fs.unlink(filePath, () => {}); // Delete temp file

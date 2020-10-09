@@ -24,20 +24,39 @@ export namespace VideoModel {
         export type TArgs = Omit<Video, 'id' | 'caption'> & Partial<Pick<Video, 'caption'>>
         export type TReturn = Video;
         export const exec: TFunction.Insert<TArgs, TReturn> = async (client, args) => {
+            const usertags = args.usertags && JSON.stringify(args.usertags)
+            const location = args.location && JSON.stringify(args.location)
+
+            const captionField = sql.insertField("caption", args.caption)
+            const usertagsField = sql.insertField("usertags", usertags)
+            const locationField = sql.insertField("location", location)
+
+            const [cComm, uComm, lComm] = [
+                sql.comm(args.caption),
+                sql.comm(usertags),
+                sql.comm(location)
+            ]
+
             const { lastID } = await client.run(
                 sql`
-                    INSERT INTO ${$PhotoTable} (
+                    INSERT INTO ${$VideoTable} (
                         "imageId",                        
-                        "fileName",
-                        "caption",
-                        "usertags",
-                        "location"
+                        "fileName"
+                            ${cComm}
+                        ${captionField}
+                            ${uComm}
+                        ${usertagsField}
+                            ${lComm}
+                        ${locationField}
                     ) VALUES (
                         ${args.imageId},
-                        ${args.fileName},
-                        ${args.caption},
-                        ${args.usertags && JSON.stringify(args.usertags)},
-                        ${args.location && JSON.stringify(args.location)}
+                        ${args.fileName}
+                            ${cComm}
+                        ${sql.insertFieldValue(args.caption)}
+                            ${uComm}
+                        ${sql.insertFieldValue(usertags)}
+                            ${lComm}
+                        ${sql.insertFieldValue(location)}
                     )
                 `
             );

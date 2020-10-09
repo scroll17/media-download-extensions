@@ -16,21 +16,36 @@ import {logger} from "../../logger";
 
 export namespace StoryModel {
     export namespace create {
-        export type TArgs = Omit<Story, 'id'>
+        export type TArgs = Story & { id: never }
         export type TReturn = Story;
         export const exec: TFunction.Insert<TArgs, TReturn> = async (client, args) => {
+            const videoId = ('videoId' in args) && args.videoId
+            const imageId = ('imageId' in args) && args.imageId
+
+            const captionField = sql.insertField("caption", args.caption)
+            const linkField = sql.insertField("link", args.link);
+
+            const [cComm, lComm] = [
+                sql.comm(args.caption),
+                sql.comm(args.link)
+            ]
+
             const { lastID } = await client.run(
                 sql`
                     INSERT INTO ${$StoryTable} (
                         "videoId",                        
-                        "imageId",                        
-                        "caption",
-                        "link"
+                        "imageId"
+                            ${cComm}
+                        ${captionField}
+                            ${lComm}
+                        ${linkField}
                     ) VALUES (
-                        ${args.videoId},
-                        ${args.imageId},
-                        ${args.caption},
-                        ${args.link}
+                        ${videoId},
+                        ${imageId}
+                            ${cComm}
+                        ${sql.insertFieldValue(args.caption)}
+                            ${lComm}
+                        ${sql.insertFieldValue(args.link)}
                     )
                 `
             );
@@ -112,7 +127,7 @@ export namespace StoryModel {
                 opts.link = story.link;
             }
 
-            if(story.videoId) {
+            if('videoId' in story) {
                 const video = await getVideo.exec(client, { storyId })
                 if(!video) throw new Error(`video not found`)
 

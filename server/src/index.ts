@@ -1,4 +1,7 @@
 import {logger} from "./logger";
+import {PhotoModel} from "./db/models/photo";
+import {mainDB} from "./db";
+import {VideoModel} from "./db/models/video";
 
 (async () => {
     logger.info('--- SET ENV ---')
@@ -20,25 +23,6 @@ import {logger} from "./logger";
     const { default: JobWorker } = await import('./jobs/index');
     await JobWorker.start()
 
-    // const {JobModel} = await import("./db/models/job");
-    // const {mainDB} = await import("./db");
-    //
-    // try {
-    //     await JobModel.create.exec(
-    //         mainDB,
-    //         {
-    //             name: 'download-file',
-    //             data: {
-    //                 text: 'test'
-    //             }
-    //         }
-    //     )
-    // } catch (e) {
-    //     logger.error('--------------------------- ERROR ---------------------')
-    //     console.trace(e)
-    // }
-    //
-    // //await JobWorker.getQueue('download-file').add({ text: 'test' })
 })()
 
 // const ig = new IgApiClient();
