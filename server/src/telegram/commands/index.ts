@@ -1,7 +1,6 @@
 export { scheduler } from './scheduler'
 export { register } from './register'
 export { getToken } from './getToken'
-export { approve } from './approve'
 
 export enum Commands {
     Register = 'register',

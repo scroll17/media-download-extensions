@@ -2,9 +2,10 @@
 import moment from 'moment'
 /*DB*/
 import {sql} from "../sql";
-import {$FileTable, File} from "../types/file";
+import {$FileTable, File, FileType} from "../types/file";
 /*other*/
-import { TFunction } from '@server/types';
+import { TFunction, TArray } from '@server/types';
+import {$UserTable} from "../types/user";
 
 export namespace FileModel {
     export namespace create {
@@ -89,6 +90,25 @@ export namespace FileModel {
             )
 
             return file
+        }
+    }
+
+    export namespace getSchedule {
+        export type TArgs = { limit: number }
+        export type TReturn = Array<{ desiredTime: string; type: FileType; name: string }>;
+        export const exec: TFunction.SelectOne<TArgs, TReturn> = async (client, args) => {
+            const schedules = await client.all<TArray.SingleType<TReturn>>(
+                sql`
+                    SELECT file."desiredTime", file."type", user."name"
+                    FROM ${$FileTable} file
+                        INNER JOIN ${$UserTable} user ON user."id" = file."userId"
+                    WHERE file."approved" = 1
+                      AND date(file."desiredTime") >= date(datetime('now', 'localtime'))
+                    LIMIT ${args.limit};
+                `
+            )
+
+            return schedules
         }
     }
 }

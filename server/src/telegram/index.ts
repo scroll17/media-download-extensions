@@ -33,8 +33,6 @@ bot.command(Commands.Register, register);
 bot.command(Commands.Scheduler, scheduler);
 bot.command(Commands.GetToken, getToken);
 bot.command(Commands.GetId, getId);
-// bot.command(Commands.Approve, approve);
-// bot.command(Commands.ForApproval, forApproval);
 
 bot.action(/approve/, approveAction)
 

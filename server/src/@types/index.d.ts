@@ -41,4 +41,8 @@ declare module '@server/types' {
     export namespace TType {
 
     }
+
+    export namespace TArray {
+        export type SingleType<TValue> = TValue extends Array<infer TSingle> ? TSingle : TValue;
+    }
 }
