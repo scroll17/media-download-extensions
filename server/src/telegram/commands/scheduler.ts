@@ -32,5 +32,5 @@ export const scheduler: Middleware<TTelegrafContext> = async (ctx) => {
         .join('\n\n')
         .value()
 
-    await ctx.reply(result)
+    await ctx.reply(_.isEmpty(result) ? 'Пусто' : result)
 }

@@ -14,7 +14,7 @@ module.exports.up = runInMainDB(async (db) => {
         "chatId"        INTEGER NOT NULL,
         
         "name"          TEXT    NOT NULL,
-        "username"      TEXT    NOT NULL,
+        "username"      TEXT,
         
         "createdAt"     TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),
         "updatedAt"     TEXT    NOT NULL DEFAULT (datetime('now', 'localtime')),

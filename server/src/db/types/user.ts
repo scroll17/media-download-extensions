@@ -11,7 +11,7 @@ export interface User {
     chatId: number;
 
     name: string;
-    username: string;
+    username?: string;
 
     createdAt: Date;
     updatedAt: Date;

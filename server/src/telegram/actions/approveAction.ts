@@ -1,11 +1,12 @@
 import {Middleware} from "telegraf";
 import _ from 'lodash'
-import {TTelegrafContext} from "../index";
+import {bot, TTelegrafContext} from "../index";
 import {parseButtonData} from "../buttons";
 import {FileModel} from "../../db/models/file";
 import {File, FileApprove} from "../../db/types/file";
 import {setEnv} from "../../env";
 import {JobModel} from "../../db/models/job";
+import {UserModel} from "../../db/models/user";
 
 export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
     const { value: fileId, options } = parseButtonData<{ status: FileApprove }>(ctx.callbackQuery?.data!);
@@ -47,7 +48,10 @@ export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
                         reply_to_message_id: Number(messageId)
                     })
                 } else {
-                    await ctx.reply(otherUserMessage, {
+                    const user = await UserModel.findByTGId.exec(client, { telegramId: memberId });
+                    if(!user) return
+
+                    await ctx.telegram.sendMessage(user.chatId, otherUserMessage, {
                         reply_to_message_id: Number(messageId)
                     })
                 }
