@@ -5,6 +5,7 @@ import _ from 'lodash'
 /*models*/
 /*workers*/
 import { downloadFileConsumer, DownloadFileOptions } from "./consumers/download-file";
+import {publishContentConsumer, PublishContentOptions} from "./consumers/publish-content";
 /*other*/
 import {SyncQueue, SyncQueueOptions } from "./SyncQueue";
 import {logger} from "../logger";
@@ -16,6 +17,7 @@ interface Consumer<T> {
 
 export type QueueNameList =
     | 'download-file'
+    | 'publish-content'
 
 const FIVE_MINUTES_IN_MS = 1000 * 60 * 60 * 12;
 
@@ -84,6 +86,15 @@ export class JobWorker {
         this.addQueue<DownloadFileOptions>(
             'download-file',
             downloadFileConsumer,
+            queueOpts
+        )
+
+        /**
+         * Publish video/photo/story to instagram
+         */
+        this.addQueue<PublishContentOptions>(
+            'publish-content',
+            publishContentConsumer,
             queueOpts
         )
 

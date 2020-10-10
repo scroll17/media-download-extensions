@@ -1,7 +1,7 @@
+/*instagram*/
+import {Auth} from "./instagram/Auth";
+/*other*/
 import {logger} from "./logger";
-import {PhotoModel} from "./db/models/photo";
-import {mainDB} from "./db";
-import {VideoModel} from "./db/models/video";
 
 (async () => {
     logger.info('--- SET ENV ---')
@@ -12,10 +12,6 @@ import {VideoModel} from "./db/models/video";
     const { bot } = await import( "./telegram");
     await bot.launch();
 
-    logger.info('--- SETUP SERVER ---')
-    const { setup } = await import('./app/index')
-    await setup()
-
     logger.info('--- CONNECT TO REDIS ---')
     await import('./db/redis/index');
 
@@ -23,18 +19,13 @@ import {VideoModel} from "./db/models/video";
     const { default: JobWorker } = await import('./jobs/index');
     await JobWorker.start()
 
-})()
+    logger.info('--- IMPORT IG ---')
+    const { ig } = await import('./instagram/ig')
 
-// const ig = new IgApiClient();
-//
-// (async () => {
-//    const server = http.createServer((req, res) => {});
-//    server.listen(3001, () => console.log(`SERVER RUN ON ${3001} PORT`));
-//
-//    await setEnv();
-//
-//    /** instagram api */
-//    await Auth.login(ig);
-//
-//    await Content.Publish.story('1600595339720.mp4', ig, { transcodeDelay: 1000 })
-// })()
+    logger.info('--- INSTAGRAM AUTH ---')
+    await Auth.login(ig);
+
+    logger.info('--- SETUP SERVER ---')
+    const { setup } = await import('./app/index')
+    await setup()
+})()

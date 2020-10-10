@@ -11,6 +11,7 @@ import { PhotoModel } from "./photo";
 /*other*/
 import { TFunction } from '@server/types';
 import {logger} from "../../logger";
+import _ from "lodash";
 
 export namespace VideoModel {
     const mainDir = path.resolve(__dirname, '../../../', 'media');
@@ -89,8 +90,8 @@ export namespace VideoModel {
                 sql`
                     SELECT photo.* 
                     FROM ${$VideoTable} video
-                        INNER JOIN "${$PhotoTable}" photo ON photo."id" = video."imageId"
-                    WHERE "id" = ${args.videoId}
+                        INNER JOIN ${$PhotoTable} photo ON photo."id" = video."imageId"
+                    WHERE video."id" = ${args.videoId}
                 `
             )
 
@@ -128,10 +129,12 @@ export namespace VideoModel {
             }
 
             if(typeof video.usertags === 'string') {
-                opts.usertags = JSON.parse(video.usertags)
+                const parse = JSON.parse(video.usertags)
+                if(!_.isEmpty(parse)) opts.usertags = parse
             }
             if(typeof video.location === 'string') {
-                opts.location = JSON.parse(video.location)
+                const parse = JSON.parse(video.location)
+                if(!_.isEmpty(parse)) opts.location = parse
             }
 
             const publishResult = await ig.publish.video(opts);

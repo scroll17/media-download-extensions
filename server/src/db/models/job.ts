@@ -28,7 +28,6 @@ export namespace JobModel {
             let job = await findById.exec(client, { jobId: lastID });
             if(!job) throw new Error('Job not found')
 
-
             const queue = jobWorker.getQueue(job.name);
             if (queue) {
                 const externalJob = await queue.add(args.data, args.options ?? {});

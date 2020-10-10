@@ -47,9 +47,10 @@ export async function setup() {
                 }
 
                 req.body.desiredTime = new Date(req.body.desiredTime);
-                if(req.body.desiredTime.valueOf() < Date.now()) {
-                    return res.status(400).send(`Cannot publish in back time.`)
-                }
+                // TODO _
+                // if(req.body.desiredTime.valueOf() < Date.now()) {
+                //     return res.status(400).send(`Cannot publish in back time.`)
+                // }
             }
 
             return next()

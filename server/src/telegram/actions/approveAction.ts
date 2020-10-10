@@ -5,6 +5,7 @@ import {parseButtonData} from "../buttons";
 import {FileModel} from "../../db/models/file";
 import {File, FileApprove} from "../../db/types/file";
 import {setEnv} from "../../env";
+import {JobModel} from "../../db/models/job";
 
 export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
     const { value: fileId, options } = parseButtonData<{ status: FileApprove }>(ctx.callbackQuery?.data!);
@@ -55,6 +56,24 @@ export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
 
         if(options.status === FileApprove.Disabled) return;
 
+        let delay: number;
+        delay = 0
+        // TODO _
+        // const desiredTime = new Date(file.desiredTime).valueOf();
+        // if(desiredTime <= Date.now()) {
+        //     delay = 0
+        // } else {
+        //     delay = desiredTime - Date.now()
+        // }
 
+        const jobData: JobModel.create.TArgs = {
+            name: "publish-content",
+            data: {
+                fileId: file.id
+            }
+        }
+        if(delay) _.set(jobData, ['options', 'delay'], delay)
+
+        await JobModel.create.exec(client, jobData);
     })
 }

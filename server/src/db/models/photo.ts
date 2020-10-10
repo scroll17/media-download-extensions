@@ -2,6 +2,7 @@
 import path from "path";
 import {IgApiClient, MediaRepositoryConfigureResponseRootObject, PostingPhotoOptions} from "instagram-private-api";
 import {promises as fs} from "fs";
+import _ from 'lodash'
 /*DB*/
 import {sql} from "../sql";
 import {$PhotoTable, Photo} from "../types/photo";
@@ -99,11 +100,15 @@ export namespace PhotoModel {
             }
 
             if(typeof photo.usertags === 'string') {
-                opts.usertags = JSON.parse(photo.usertags)
+                const parse = JSON.parse(photo.usertags)
+                if(!_.isEmpty(parse)) opts.usertags = parse
             }
             if(typeof photo.location === 'string') {
-                opts.location = JSON.parse(photo.location)
+                const parse = JSON.parse(photo.location)
+                if(!_.isEmpty(parse)) opts.location = parse
             }
+
+            console.log('opts > ', opts)
 
             const publishResult = await ig.publish.photo(opts);
 

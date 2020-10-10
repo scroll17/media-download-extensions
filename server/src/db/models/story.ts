@@ -78,8 +78,8 @@ export namespace StoryModel {
                 sql`
                     SELECT photo.* 
                     FROM ${$StoryTable} story
-                        INNER JOIN "${$PhotoTable}" photo ON photo."id" = story."imageId"
-                    WHERE "id" = ${args.storyId}
+                        INNER JOIN ${$PhotoTable} photo ON photo."id" = story."imageId"
+                    WHERE story."id" = ${args.storyId}
                 `
             )
 
@@ -95,8 +95,8 @@ export namespace StoryModel {
                 sql`
                     SELECT video.* 
                     FROM ${$StoryTable} story
-                        INNER JOIN "${$VideoTable}" video ON video."id" = story."videoId"
-                    WHERE "id" = ${args.storyId}
+                        INNER JOIN ${$VideoTable} video ON video."id" = story."videoId"
+                    WHERE story."id" = ${args.storyId}
                 `
             )
 
