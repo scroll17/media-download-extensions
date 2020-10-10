@@ -7,7 +7,8 @@
   "scripts": {
     "tsc": "tsc",
     "dev": "NODE_ENV=development ts-node-dev --respawn --transpile-only src/index.ts",
-    "watch": "NODE_ENV=development ts-node-dev --respawn --transpile-only"
+    "watch": "NODE_ENV=development ts-node-dev --respawn --transpile-only",
+    "count_number_of_code": "npx @intrinsic/loc"
   },
   "keywords": [],
   "author": "",
