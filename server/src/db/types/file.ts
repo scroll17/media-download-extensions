@@ -9,17 +9,23 @@ export enum FileType {
     Photo = 'photo'
 }
 
+export enum FileApprove {
+    'NotSeen' = -1,
+    'Approved' = 1,
+    'Disabled' = 0
+}
+
 export interface File {
     id: number;
     userId: number;
 
     type: FileType;
 
-    published: number;
-    approved: number;
+    published: 0 | 1;
+    approved: FileApprove;
     desiredTime: Date;
 
-    messageIds?: string;
+    messageIds?: Record<string, { messageId: number; }>
 
     videoId?: number;
     storyId?: number;

@@ -11,17 +11,16 @@ export type TOptions = {
 }
 
 function withPrefix(prefix: ButtonPrefix, value: string | number, options: TOptions = {}) {
-    console.log('stringify => ', `${prefix}:${value}:${JSON.stringify(options)}`)
     return `${prefix}:${value}:${JSON.stringify(options)}`
 }
 
-function parseButtonData(text: string) {
+function parseButtonData<TOpts = Record<string, any>>(text: string) {
     const [prefix, value, ...options] = text.split(':');
 
     return {
         prefix,
         value: value,
-        options: JSON.parse(options.join(':'))
+        options: JSON.parse(options.join(':')) as TOpts
     }
 }
 

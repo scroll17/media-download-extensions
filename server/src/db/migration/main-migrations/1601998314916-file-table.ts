@@ -1,5 +1,5 @@
 import { runInMainDB } from "../index";
-import {FILE_TABLE, FileType} from "../../types/file";
+import {FILE_TABLE, FileApprove} from "../../types/file";
 import {USER_TABLE} from "../../types/user";
 import {VIDEO_TABLE} from "../../types/video";
 import {STORY_TABLE} from "../../types/story";
@@ -15,10 +15,10 @@ module.exports.up = runInMainDB(async (db) => {
             
             "type"          TEXT    NOT NULL,
             "published"     INTEGER NOT NULL        DEFAULT 0,
-            "approved"      INTEGER NOT NULL        DEFAULT 0,
+            "approved"      INTEGER NOT NULL        DEFAULT ${FileApprove.NotSeen},
             "desiredTime"   TEXT    NOT NULL,
             
-            "messageIds"    TEXT                    DEFAULT '[]',
+            "messageIds"    TEXT                    DEFAULT '{}',
             
             "videoId"       INTEGER                 DEFAULT NULL,
             "storyId"       INTEGER                 DEFAULT NULL,

@@ -56,7 +56,7 @@ export namespace FileModel {
     export namespace update {
         export type TArgs = {
             id: File['id'],
-            data: Partial<Pick<File, 'published' | 'approved'>> & { messageIds: number[] }
+            data: Partial<Pick<File, 'published' | 'approved' | 'messageIds'>>
         }
         export type TReturn = File
         export const exec: TFunction.Update<TArgs, TReturn> = async (client, args) => {

@@ -5,6 +5,8 @@ import { checkValidUserId } from "./middleware";
 /*commands*/
 import {approve, Commands, getToken, register, scheduler} from "./commands";
 import {forApproval} from "./commands/forApproval";
+/*actions*/
+import {approveAction} from "./actions";
 /*DB*/
 import {DB, mainDB} from "../db";
 import {Databases} from "../db/migration";
@@ -34,29 +36,6 @@ bot.command(Commands.GetId, getId);
 // bot.command(Commands.Approve, approve);
 // bot.command(Commands.ForApproval, forApproval);
 
-
-bot.hears('test', async (ctx) => {
-    const result = await ctx.reply('test message', approveButtons(1));
-})
-bot.hears('photo', async (ctx) => {
-    await ctx.replyWithPhoto(
-        {
-            source: PhotoModel.getFilePath('1602280651914'),
-        },
-        {
-            caption: `${'денис'} хочет опубликовать`,
-            ...approveButtons(5),
-            disable_web_page_preview: undefined
-        }
-    )
-})
-
-
-
-bot.action(/approve/, async (ctx) => {
-    console.log('parse => ', parseButtonData(ctx.callbackQuery?.data!))
-
-    await ctx.reply(ctx.callbackQuery?.data!);
-})
+bot.action(/approve/, approveAction)
 
 export { TTelegrafContext, bot }

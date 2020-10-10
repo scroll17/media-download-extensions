@@ -5,7 +5,7 @@ import fs from 'fs'
 import _ from 'lodash';
 /*DB*/
 import {mainDB} from "../../db";
-import {FileType} from "../../db/types/file";
+import {File, FileType} from "../../db/types/file";
 import {Photo} from "../../db/types/photo";
 import {Video} from "../../db/types/video";
 import {Story} from "../../db/types/story";
@@ -171,7 +171,9 @@ export async function downloadFileConsumer(
         const mainUser = (await UserModel.findById.exec(client, { userId: Number(userId) }))!
 
         const instagramPageMembers = setEnv.VALID_TELEGRAM_IDS;
-        const messageIds = await Promise.all(
+
+        const messageIdSet: File['messageIds'] = {};
+        await Promise.all(
             _.map(instagramPageMembers, async memberId => {
                 const user = memberId === mainUser.telegramId
                     ? mainUser
@@ -190,7 +192,9 @@ export async function downloadFileConsumer(
                     }
                 )
 
-                return result.message_id
+                messageIdSet[memberId] = {
+                    messageId: result.message_id
+                }
             })
         )
 
@@ -199,7 +203,7 @@ export async function downloadFileConsumer(
             {
                 id: file.id,
                 data: {
-                    messageIds: messageIds as number[]
+                    messageIds: messageIdSet
                 }
             }
         )

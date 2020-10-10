@@ -1,13 +1,15 @@
 /*external modules*/
-import {Extra, Markup} from 'telegraf';
+import { Markup} from 'telegraf';
+/*DB*/
+import {FileApprove} from "../../db/types/file";
 /*other*/
 import {ButtonPrefix, withPrefix} from "./index";
 
 export function approveButtons(fileId: number) {
     return Markup
         .inlineKeyboard([
-            Markup.callbackButton('Approve', withPrefix(ButtonPrefix.Approve, fileId, { status: 1 })),
-            Markup.callbackButton('Disable', withPrefix(ButtonPrefix.Approve, fileId, { status: 0 }))
+            Markup.callbackButton('Approve', withPrefix(ButtonPrefix.Approve, fileId, { status: FileApprove.Approved })),
+            Markup.callbackButton('Disable', withPrefix(ButtonPrefix.Approve, fileId, { status: FileApprove.Disabled }))
         ])
         .extra()
 }
