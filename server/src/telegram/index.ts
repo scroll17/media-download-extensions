@@ -1,18 +1,15 @@
 /*external modules*/
-import { Telegraf, Context, Extra } from 'telegraf';
+import { Telegraf, Context } from 'telegraf';
 /*middlewares*/
 import { checkValidUserId } from "./middleware";
 /*commands*/
-import {approve, Commands, getToken, register, scheduler} from "./commands";
-import {forApproval} from "./commands/forApproval";
+import { Commands, getToken, getId, register, scheduler } from "./commands";
 /*actions*/
 import {approveAction} from "./actions";
 /*DB*/
 import {DB, mainDB} from "../db";
 import {Databases} from "../db/migration";
-import {getId} from "./commands/getId";
-import {approveButtons, ButtonPrefix, parseButtonData} from "./buttons";
-import {PhotoModel} from "../db/models/photo";
+/*other*/
 
 interface TCustomTelegrafContext extends Context {
     db: Record<Databases, DB>

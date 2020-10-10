@@ -6,7 +6,6 @@ import {mainDB} from "../db";
 import {JobStatus} from "../db/types/job";
 /*models*/
 import {JobModel} from "../db/models/job";
-import {logger} from "../logger";
 /*other*/
 
 export type SyncQueueOptions = Queue.QueueOptions & {

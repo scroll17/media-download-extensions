@@ -9,6 +9,7 @@ import {mainDB} from "../db";
 /*models*/
 import {JobModel} from "../db/models/job";
 /*other*/
+import {logger} from "../logger";
 
 interface IReqBody {
     desiredTime: Date,
@@ -47,10 +48,9 @@ export async function setup() {
                 }
 
                 req.body.desiredTime = new Date(req.body.desiredTime);
-                // TODO _
-                // if(req.body.desiredTime.valueOf() < Date.now()) {
-                //     return res.status(400).send(`Cannot publish in back time.`)
-                // }
+                if(req.body.desiredTime.valueOf() < Date.now()) {
+                    return res.status(400).send(`Cannot publish in back time.`)
+                }
             }
 
             return next()
@@ -68,5 +68,5 @@ export async function setup() {
         }
     )
 
-    app.listen(PORT, () => console.log(`Server start on http://localhost:${PORT}`))
+    app.listen(PORT, () => logger.debug(`Server start on http://localhost:${PORT}`))
 }

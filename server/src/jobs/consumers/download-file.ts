@@ -170,11 +170,11 @@ export async function downloadFileConsumer(
 
         const mainUser = (await UserModel.findById.exec(client, { userId: Number(userId) }))!
 
-        const instagramPageMembers = setEnv.VALID_TELEGRAM_IDS;
+        const instagramMembers = setEnv.VALID_TELEGRAM_IDS;
 
         const messageIdSet: File['messageIds'] = {};
         await Promise.all(
-            _.map(instagramPageMembers, async memberId => {
+            _.map(instagramMembers, async memberId => {
                 const user = memberId === mainUser.telegramId
                     ? mainUser
                     : await UserModel.findByTGId.exec(client, { telegramId: memberId })

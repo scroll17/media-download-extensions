@@ -1,4 +1,5 @@
 /*external modules*/
+import _ from 'lodash'
 import {promises as fs} from "fs";
 import {PostingStoryPhotoOptions, PostingStoryVideoOptions} from "instagram-private-api/dist/types";
 import {IgApiClient, MediaRepositoryConfigureResponseRootObject} from "instagram-private-api";
@@ -127,7 +128,7 @@ export namespace StoryModel {
                 opts.link = story.link;
             }
 
-            if('videoId' in story) {
+            if(_.get(story, 'videoId')) {
                 const video = await getVideo.exec(client, { storyId })
                 if(!video) throw new Error(`video not found`)
 

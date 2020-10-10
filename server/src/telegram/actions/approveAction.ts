@@ -1,12 +1,17 @@
-import {Middleware} from "telegraf";
+/*external modules*/
+import { Middleware } from 'telegraf';
 import _ from 'lodash'
-import {bot, TTelegrafContext} from "../index";
-import {parseButtonData} from "../buttons";
-import {FileModel} from "../../db/models/file";
+/*telegram*/
+import {TTelegrafContext} from "../index";
+/*DB*/
 import {File, FileApprove} from "../../db/types/file";
-import {setEnv} from "../../env";
-import {JobModel} from "../../db/models/job";
+/*models*/
 import {UserModel} from "../../db/models/user";
+import {FileModel} from "../../db/models/file";
+import {JobModel} from "../../db/models/job";
+/*other*/
+import {setEnv} from "../../env";
+import {parseButtonData} from "../buttons";
 
 export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
     const { value: fileId, options } = parseButtonData<{ status: FileApprove }>(ctx.callbackQuery?.data!);
@@ -18,8 +23,6 @@ export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
         if(file.approved !== FileApprove.NotSeen) {
             return await ctx.reply('Выбор уже сделан.')
         }
-
-        const messagesSet: File['messageIds'] = JSON.parse(file.messageIds as unknown as string);
 
         await FileModel.update.exec(
             client,
@@ -38,7 +41,9 @@ export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
             messagesToReply = ['Вы подтвердили эту публикацию.', `"${ctx.from?.first_name}" подтвердил публикацию.`];
         }
 
+        const messagesSet: File['messageIds'] = JSON.parse(file.messageIds as unknown as string);
         const [mainUserMessage, otherUserMessage] = messagesToReply
+
         await Promise.all(
             _.map(setEnv.VALID_TELEGRAM_IDS, async memberId => {
                 const { messageId } = messagesSet![memberId];
@@ -61,14 +66,12 @@ export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
         if(options.status === FileApprove.Disabled) return;
 
         let delay: number;
-        delay = 0
-        // TODO _
-        // const desiredTime = new Date(file.desiredTime).valueOf();
-        // if(desiredTime <= Date.now()) {
-        //     delay = 0
-        // } else {
-        //     delay = desiredTime - Date.now()
-        // }
+        const desiredTime = new Date(file.desiredTime).valueOf();
+        if(desiredTime <= Date.now()) {
+            delay = 0
+        } else {
+            delay = desiredTime - Date.now()
+        }
 
         const jobData: JobModel.create.TArgs = {
             name: "publish-content",

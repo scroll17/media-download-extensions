@@ -1,7 +1,7 @@
 /*external modules*/
 import { IgApiClient } from 'instagram-private-api'
-import {logger} from "../logger";
 /*other*/
+import {logger} from "../logger";
 
 export namespace Auth {
     export async function login(ig: IgApiClient, prePostFlow = true) {

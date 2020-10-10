@@ -1,10 +1,9 @@
 /*external modules*/
 /*DB*/
 import {sql} from "../sql";
-import {$UserTable, User} from "../types/user";
+import {$TokenTable, Token} from "../types/token";
 /*other*/
 import { TFunction } from '@server/types';
-import {$TokenTable, Token} from "../types/token";
 
 export namespace TokenModel {
     export namespace findById {

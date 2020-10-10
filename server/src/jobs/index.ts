@@ -1,8 +1,7 @@
 /*external modules*/
-import Queue, {Job, JobOptions, QueueOptions } from 'bull'
+import { Job, JobOptions, QueueOptions } from 'bull'
 import _ from 'lodash'
 /*DB*/
-/*models*/
 /*workers*/
 import { downloadFileConsumer, DownloadFileOptions } from "./consumers/download-file";
 import {publishContentConsumer, PublishContentOptions} from "./consumers/publish-content";
@@ -29,8 +28,7 @@ export class JobWorker {
         redis: QueueOptions['redis']
     }
     readonly queues: Record<string, SyncQueue> = {};
-    // TODO _
-    readonly defaultJobOptions: JobOptions = { attempts: 1 };
+    readonly defaultJobOptions: JobOptions = { attempts: 3 };
 
     constructor() {
         this.logger = logger;

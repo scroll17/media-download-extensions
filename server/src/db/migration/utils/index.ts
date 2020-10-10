@@ -1,9 +1,10 @@
 /*external modules*/
-import path from "path";
 import _ from 'lodash'
+import path from "path";
 /*DB*/
 import { Migration, Store } from "../index";
 /*other*/
+import {logger} from "../../../logger";
 
 enum MigrateCommand {
     Up = 'up',
@@ -68,7 +69,7 @@ function migrateAction(type: MigrateCommand.Up | MigrateCommand.Down) {
         for(let migration of migrationsToAction) {
             const migrationPath = path.resolve(dirPath, migration.title);
 
-            console.debug(`Migration ${_.upperFirst(type)}: ${migration.title}`)
+            logger.debug(`Migration ${_.upperFirst(type)}: ${migration.title}`)
 
             const exports = require(migrationPath);
             const functionToSetup = exports[type];

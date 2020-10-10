@@ -1,4 +1,5 @@
 /*external modules*/
+import _ from "lodash";
 import path from "path";
 import {promises as fs} from "fs";
 import {IgApiClient, MediaRepositoryConfigureResponseRootObject, PostingVideoOptions} from "instagram-private-api";
@@ -11,7 +12,6 @@ import { PhotoModel } from "./photo";
 /*other*/
 import { TFunction } from '@server/types';
 import {logger} from "../../logger";
-import _ from "lodash";
 
 export namespace VideoModel {
     const mainDir = path.resolve(__dirname, '../../../', 'media');

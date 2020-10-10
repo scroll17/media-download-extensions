@@ -1,8 +1,12 @@
+/*external modules*/
 import {Middleware} from "telegraf";
-import {TTelegrafContext} from "../index";
+/*models*/
 import {UserModel} from "../../db/models/user";
-import {generateSecretToken} from "../../crypto/generateSecretToken";
 import {TokenModel} from "../../db/models/token";
+/*telegram*/
+import {TTelegrafContext} from "../index";
+/*other*/
+import {generateSecretToken} from "../../crypto/generateSecretToken";
 
 export const getToken: Middleware<TTelegrafContext> = async (ctx) => {
    await ctx.db.main.getClientTransaction(async client => {
@@ -12,10 +16,8 @@ export const getToken: Middleware<TTelegrafContext> = async (ctx) => {
                 telegramId: ctx.from?.id!
             }
         )
-
         if(!user) {
-            await ctx.reply('Вы не зареестрированы.')
-            return
+            return await ctx.reply('Вы не зареестрированы.')
         }
 
         if(user.tokenId) {
@@ -27,16 +29,16 @@ export const getToken: Middleware<TTelegrafContext> = async (ctx) => {
             )
         }
 
-        const secretToken = generateSecretToken()
         const token = await TokenModel.create.exec(
             client,
             {
-                data: secretToken
+                data: generateSecretToken()
             }
         )
         if(!token) {
             await ctx.reply('Возникла проблема...')
-            return;
+
+            throw new Error(`token not found`)
         }
 
         await UserModel.update.exec(
@@ -47,6 +49,6 @@ export const getToken: Middleware<TTelegrafContext> = async (ctx) => {
             }
         )
 
-        await ctx.reply(secretToken)
+        await ctx.reply(token.data)
     })
 }

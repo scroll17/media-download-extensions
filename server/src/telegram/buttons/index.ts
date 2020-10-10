@@ -4,6 +4,7 @@
 export enum ButtonPrefix {
     Approve = 'approve'
 }
+
 export type TButtonStatus = -1 | 0 | 1
 export type TOptions = {
     status?: TButtonStatus;

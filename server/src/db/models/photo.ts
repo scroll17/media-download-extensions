@@ -1,8 +1,8 @@
 /*external modules*/
+import _ from 'lodash'
 import path from "path";
 import {IgApiClient, MediaRepositoryConfigureResponseRootObject, PostingPhotoOptions} from "instagram-private-api";
 import {promises as fs} from "fs";
-import _ from 'lodash'
 /*DB*/
 import {sql} from "../sql";
 import {$PhotoTable, Photo} from "../types/photo";

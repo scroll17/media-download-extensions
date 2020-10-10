@@ -1,4 +1,6 @@
+/*external modules*/
 import {PostingLocation, PostingUsertags} from "instagram-private-api/dist/types/posting.options";
+/*other*/
 import {sql} from "../sql";
 
 export const PHOTO_TABLE = 'Photo';

@@ -1,8 +1,12 @@
-import {Middleware} from "telegraf";
-import {TTelegrafContext} from "../index";
-import {FileModel} from "../../db/models/file";
+/*external modules*/
+import { Middleware } from 'telegraf';
 import _ from 'lodash'
 import moment from 'moment'
+/*telegram*/
+import {TTelegrafContext} from "../index";
+/*models*/
+import {FileModel} from "../../db/models/file";
+/*other*/
 
 export const scheduler: Middleware<TTelegrafContext> = async (ctx) => {
     const schedules = await FileModel.getSchedule.exec(ctx.db.main, { limit: 30 })
@@ -19,11 +23,15 @@ export const scheduler: Middleware<TTelegrafContext> = async (ctx) => {
                         valueOf: time.valueOf(),
                         time: time.format('HH:mm'),
                         type: v.type,
-                        name: v.name
+                        name: v.name,
+                        published: Boolean(v.published)
                     }
                 })
                 .sortBy('valueOf')
-                .map(v => `${v.time}    ${v.name}     "${v.type}"`)
+                .map(v => {
+                    const published = v.published ? '+' : '-'
+                    return `${v.time}    ${v.name}     ${published}    "${v.type}"`
+                })
                 .join('\n')
                 .value();
 

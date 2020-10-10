@@ -1,14 +1,9 @@
 /*external modules*/
 import {Job} from 'bull';
-import axios from 'axios'
-import fs from 'fs'
 import _ from 'lodash';
 /*DB*/
 import {mainDB} from "../../db";
 import {File, FileType} from "../../db/types/file";
-import {Photo} from "../../db/types/photo";
-import {Video} from "../../db/types/video";
-import {Story} from "../../db/types/story";
 /*models*/
 import {VideoModel} from "../../db/models/video";
 import {StoryModel} from "../../db/models/story";
@@ -17,12 +12,10 @@ import {FileModel} from "../../db/models/file";
 import {UserModel} from "../../db/models/user";
 /*telegram*/
 import {bot} from "../../telegram";
-import {approveButtons} from "../../telegram/buttons";
 /*instagram*/
 import { ig } from '../../instagram/ig'
 /*other*/
 import {logger} from '../../logger';
-import {setEnv} from "../../env";
 
 export type PublishContentOptions = {
     fileId: number;
@@ -45,7 +38,6 @@ export async function publishContentConsumer(
         if(!file) throw new Error('file not found');
 
         const messagesSet: File['messageIds'] = JSON.parse(file.messageIds as unknown as string);
-
         try {
             switch (file.type) {
                 case FileType.Photo: {
@@ -83,6 +75,16 @@ export async function publishContentConsumer(
                 }
             }
 
+            await FileModel.update.exec(
+                client,
+                {
+                    id: file.id,
+                    data: {
+                        published: 1
+                    }
+                }
+            )
+
             await Promise.all(
                 _.map(messagesSet, async (value, memberId) => {
                     const user = await UserModel.findByTGId.exec(
@@ -103,8 +105,6 @@ export async function publishContentConsumer(
                 })
             )
         } catch (e) {
-            console.log(e);
-
             await Promise.all(
                 _.map(messagesSet, async (value, memberId) => {
                     const user = await UserModel.findByTGId.exec(

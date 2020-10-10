@@ -1,4 +1,3 @@
-import {PostingLocation, PostingUsertags} from "instagram-private-api/dist/types/posting.options";
 import {sql} from "../sql";
 
 export const STORY_TABLE = 'Story';

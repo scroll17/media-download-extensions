@@ -1,8 +1,12 @@
-import {Middleware} from "telegraf";
+/*external modules*/
+import { Middleware } from 'telegraf';
+import _ from 'lodash'
+import moment from 'moment'
+/*telegram*/
 import {TTelegrafContext} from "../index";
+/*models*/
 import {UserModel} from "../../db/models/user";
-import {generateSecretToken} from "../../crypto/generateSecretToken";
-import {TokenModel} from "../../db/models/token";
+/*other*/
 
 export const getId: Middleware<TTelegrafContext> = async (ctx) => {
     const user = await UserModel.findByTGId.exec(
@@ -11,10 +15,8 @@ export const getId: Middleware<TTelegrafContext> = async (ctx) => {
             telegramId: ctx.from?.id!
         }
     )
-
     if(!user) {
-        await ctx.reply('Вы не зареестрированы.')
-        return
+        return await ctx.reply('Вы не зареестрированы.')
     }
 
     await ctx.reply(`Ваш id: ${user.id}`)

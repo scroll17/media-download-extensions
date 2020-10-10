@@ -1,6 +1,3 @@
-/*external modules*/
-/*DB*/
-/*other*/
 import {sql} from "../sql";
 import {QueueNameList} from "../../jobs";
 

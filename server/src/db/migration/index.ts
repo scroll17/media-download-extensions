@@ -1,9 +1,10 @@
 /*external modules*/
-import path from "path";
 import _ from 'lodash'
+import path from "path";
 import { promises as fs, existsSync } from 'fs'
 /*DB*/
 import { mainDB } from "../index";
+/*utils*/
 import {
     downMigrations,
     getDiffMigrations,
@@ -13,8 +14,8 @@ import {
     upMigrations
 } from "./utils";
 import {run} from "./utils/run";
-/*utils*/
 /*other*/
+import {logger} from "../../logger";
 
 /**
  *  migrations.json
@@ -146,7 +147,7 @@ export async function execMigrate(cmd: MigrateCommand, DBName: Databases, paths:
 
             if(paths.length === 0) {
                 if(_.isEmpty(newMigrations)) {
-                    console.debug('Migrations already upped.')
+                    logger.debug('Migrations already upped.')
                     return
                 }
 
@@ -162,7 +163,7 @@ export async function execMigrate(cmd: MigrateCommand, DBName: Databases, paths:
                     .value();
 
                 if(_.isEmpty(migrationsToUp)) {
-                    console.debug('Migrations already upped.')
+                    logger.debug('Migrations already upped.')
                     return
                 }
 
@@ -177,7 +178,7 @@ export async function execMigrate(cmd: MigrateCommand, DBName: Databases, paths:
 
             if(paths.length === 0) {
                 if(_.isEmpty(activeStore.migrations)) {
-                    console.debug('Migrations already down.')
+                    logger.debug('Migrations already down.')
                     return
                 }
 
@@ -196,7 +197,7 @@ export async function execMigrate(cmd: MigrateCommand, DBName: Databases, paths:
                     .value()
 
                 if(_.isEmpty(migrationsToDown)) {
-                    console.debug('Migrations already down.')
+                    logger.debug('Migrations already down.')
                     return
                 }
 
@@ -224,7 +225,7 @@ export async function execMigrate(cmd: MigrateCommand, DBName: Databases, paths:
                 paths.map(async filePath => {
                     const pathInDir = path.resolve(migrationsDirPath, filePath);
 
-                    console.debug(`Remove: ${filePath}`)
+                    logger.debug(`Remove: ${filePath}`)
                     await fs.unlink(pathInDir)
                 })
             )
@@ -234,7 +235,7 @@ export async function execMigrate(cmd: MigrateCommand, DBName: Databases, paths:
             activeStore.migrations
                 .sort((a, b) => a.timestamp - b.timestamp)
                 .map(migration => {
-                    console.info(migration.title)
+                    logger.info(migration.title)
                 })
             break;
         }

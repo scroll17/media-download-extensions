@@ -19,11 +19,11 @@ import {logger} from "./logger";
     const { default: JobWorker } = await import('./jobs/index');
     await JobWorker.start()
 
-    // logger.info('--- IMPORT IG ---')
-    // const { ig } = await import('./instagram/ig')
-    //
-    // logger.info('--- INSTAGRAM AUTH ---')
-    // await Auth.login(ig);
+    logger.info('--- IMPORT IG ---')
+    const { ig } = await import('./instagram/ig')
+
+    logger.info('--- INSTAGRAM AUTH ---')
+    await Auth.login(ig);
 
     logger.info('--- SETUP SERVER ---')
     const { setup } = await import('./app/index')

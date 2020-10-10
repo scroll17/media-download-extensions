@@ -1,6 +1,6 @@
 /*external modules*/
 import {Middleware} from "telegraf";
-/*DB*/
+/*models*/
 import {UserModel} from "../../db/models/user";
 /*telegram*/
 import {TTelegrafContext} from "../index";

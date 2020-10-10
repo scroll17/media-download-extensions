@@ -1,4 +1,6 @@
+/*external modules*/
 import Redis from 'ioredis';
+/*other*/
 import {setEnv} from "../../env";
 
 const { NODE_ENV } = process.env;

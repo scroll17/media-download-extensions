@@ -1,6 +1,6 @@
 /*external modules*/
-import {JobOptions} from "bull";
 import _ from 'lodash'
+import {JobOptions} from "bull";
 /*DB*/
 import {sql} from "../sql";
 import {$JobTable, Job, JobStatus} from "../types/job";
