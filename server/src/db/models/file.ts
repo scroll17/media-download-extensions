@@ -6,6 +6,7 @@ import {$FileTable, File, FileType} from "../types/file";
 import {$UserTable} from "../types/user";
 /*other*/
 import { TFunction, TArray } from '@server/types';
+import {Constants} from "../../constants";
 
 export namespace FileModel {
     export namespace create {
@@ -39,7 +40,7 @@ export namespace FileModel {
                     ) VALUES (
                         ${args.userId},
                         ${args.type},
-                        ${moment(args.desiredTime).format('YYYY-DD-MM HH:mm:ss')}
+                        ${moment(args.desiredTime).format(Constants.DBDateTime)}
                             ${vComm}
                         ${sql.insertFieldValue(args.videoId)}
                             ${sComm}

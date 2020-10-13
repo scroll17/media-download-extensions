@@ -3,6 +3,7 @@ import {Job} from 'bull';
 import axios from 'axios'
 import fs from 'fs'
 import _ from 'lodash';
+import moment from 'moment'
 /*DB*/
 import {mainDB} from "../../db";
 import {File, FileType} from "../../db/types/file";
@@ -19,11 +20,12 @@ import {UserModel} from "../../db/models/user";
 import {bot} from "../../telegram";
 import {approveButtons} from "../../telegram/buttons";
 /*other*/
+import {Constants} from "../../constants";
 import {logger} from '../../logger';
 import {setEnv} from "../../env";
 
 export type DownloadFileOptions = {
-    desiredTime: Date;
+    desiredTime: string;
     userId: string;
     imgUrl: string;
     caption?: string;
@@ -152,7 +154,8 @@ export async function downloadFileConsumer(
         }
 
         const fileData: FileModel.create.TArgs = {
-            ..._.pick(job.data, ['type', 'desiredTime']),
+            ..._.pick(job.data, ['type']),
+            desiredTime: moment(job.data.desiredTime, Constants.DBDateTime).toDate(),
             userId: Number(userId),
             photoId: photo?.id,
             videoId: video?.id,

@@ -7,17 +7,17 @@ import {TTelegrafContext} from "../index";
 /*models*/
 import {FileModel} from "../../db/models/file";
 /*other*/
+import {Constants} from "../../constants";
 
 export const scheduler: Middleware<TTelegrafContext> = async (ctx) => {
     const schedules = await FileModel.getSchedule.exec(ctx.db.main, { limit: 30 })
 
-    const parseFormat = 'YYYY-DD-MM HH:mm:ss';
     const result = _.chain(schedules)
-        .groupBy(schedule => moment(schedule.desiredTime, parseFormat).format('YYYY-MM-DD'))
+        .groupBy(schedule => moment(schedule.desiredTime, Constants.DBDateTime).format('YYYY-MM-DD'))
         .map((value, key) => {
             const dataInString =_.chain(value)
                 .map(v => {
-                    const time = moment(v.desiredTime, parseFormat);
+                    const time = moment(v.desiredTime, Constants.DBDateTime);
 
                     return {
                         valueOf: time.valueOf(),

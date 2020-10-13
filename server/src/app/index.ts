@@ -1,6 +1,7 @@
 /*external modules*/
 import express from 'express';
 import _ from 'lodash'
+import moment from 'moment'
 /*middlewares*/
 import {checkAccess} from "./middlewares/checkAccess";
 /*DB*/
@@ -9,6 +10,7 @@ import {mainDB} from "../db";
 /*models*/
 import {JobModel} from "../db/models/job";
 /*other*/
+import { Constants } from "../constants";
 import {logger} from "../logger";
 
 interface IReqBody {
@@ -60,7 +62,10 @@ export async function setup() {
                 mainDB,
                 {
                     name: "download-file",
-                    data: req.body
+                    data: {
+                        ...req.body,
+                        desiredTime: moment(req.body.desiredTime).format(Constants.DBDateTime)
+                    }
                 }
             )
 

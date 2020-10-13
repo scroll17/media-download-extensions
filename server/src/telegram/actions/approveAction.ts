@@ -1,6 +1,7 @@
 /*external modules*/
 import { Middleware } from 'telegraf';
 import _ from 'lodash'
+import moment from "moment";
 /*telegram*/
 import {TTelegrafContext} from "../index";
 /*DB*/
@@ -10,6 +11,7 @@ import {UserModel} from "../../db/models/user";
 import {FileModel} from "../../db/models/file";
 import {JobModel} from "../../db/models/job";
 /*other*/
+import {Constants} from "../../constants";
 import {setEnv} from "../../env";
 import {parseButtonData} from "../buttons";
 
@@ -38,7 +40,11 @@ export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
         if(options.status === FileApprove.Disabled) {
             messagesToReply = ['Вы отклонили эту публикацию.', `"${ctx.from?.first_name}" отклонил публикацию.`];
         } else {
-            messagesToReply = ['Вы подтвердили эту публикацию.', `"${ctx.from?.first_name}" подтвердил публикацию.`];
+            const timeToPublish = moment(file.desiredTime, Constants.DBDateTime).format('MM.DD HH:mm')
+            messagesToReply = [
+                'Вы подтвердили эту публикацию.',
+                `"${ctx.from?.first_name}" подтвердил публикацию.`
+            ].map(message => message + '\n' + `Дата публикации: "${timeToPublish}"`)
         }
 
         const messagesSet: File['messageIds'] = JSON.parse(file.messageIds as unknown as string);
@@ -66,7 +72,7 @@ export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
         if(options.status === FileApprove.Disabled) return;
 
         let delay: number;
-        const desiredTime = new Date(file.desiredTime).valueOf();
+        const desiredTime = moment(file.desiredTime, Constants.DBDateTime).valueOf();
         if(desiredTime <= Date.now()) {
             delay = 0
         } else {
