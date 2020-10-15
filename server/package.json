@@ -25,6 +25,7 @@
     "typescript": "<3.8.0"
   },
   "dependencies": {
+    "@types/moment-timezone": "^0.5.30",
     "axios": "^0.20.0",
     "bull": "^3.18.0",
     "chalk": "^4.1.0",
@@ -33,6 +34,7 @@
     "ioredis": "^4.17.3",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
+    "moment-timezone": "^0.5.31",
     "sqlite3": "^5.0.0",
     "telegraf": "^3.38.0",
     "ts-node": "^9.0.0"

@@ -4,6 +4,7 @@ import _ from 'lodash'
 import moment from "moment";
 /*telegram*/
 import {TTelegrafContext} from "../index";
+import {parseButtonData} from "../buttons";
 /*DB*/
 import {File, FileApprove} from "../../db/types/file";
 /*models*/
@@ -13,7 +14,7 @@ import {JobModel} from "../../db/models/job";
 /*other*/
 import {Constants} from "../../constants";
 import {setEnv} from "../../env";
-import {parseButtonData} from "../buttons";
+import {logger} from "../../logger";
 
 export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
     const { value: fileId, options } = parseButtonData<{ status: FileApprove }>(ctx.callbackQuery?.data!);
@@ -25,16 +26,6 @@ export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
         if(file.approved !== FileApprove.NotSeen) {
             return await ctx.reply('Выбор уже сделан.')
         }
-
-        await FileModel.update.exec(
-            client,
-            {
-                id: file.id,
-                data: {
-                    approved: options.status
-                }
-            }
-        );
 
         let messagesToReply: string[]
         if(options.status === FileApprove.Disabled) {
@@ -52,6 +43,11 @@ export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
 
         await Promise.all(
             _.map(setEnv.VALID_TELEGRAM_IDS, async memberId => {
+                if(!messagesSet![memberId]) {
+                    logger.error(`${memberId} did not receive the message`)
+                    return
+                }
+
                 const { messageId } = messagesSet![memberId];
 
                 if(memberId === ctx.from?.id) {
@@ -71,12 +67,14 @@ export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
 
         if(options.status === FileApprove.Disabled) return;
 
-        let delay: number;
         const desiredTime = moment(file.desiredTime, Constants.DBDateTime).valueOf();
-        if(desiredTime <= Date.now()) {
+        const timeNow = moment().tz('Europe/Zaporozhye').valueOf()
+
+        let delay: number;
+        if(desiredTime <= timeNow) {
             delay = 0
         } else {
-            delay = desiredTime - Date.now()
+            delay = desiredTime - timeNow
         }
 
         await JobModel.create.exec(client, {
@@ -88,5 +86,15 @@ export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
                 delay
             }
         });
+
+        await FileModel.update.exec(
+            client,
+            {
+                id: file.id,
+                data: {
+                    approved: options.status
+                }
+            }
+        );
     })
 }

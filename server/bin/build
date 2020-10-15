@@ -3,4 +3,6 @@ export NODE_ENV="production"
 npx tsc -p tsconfig.json
 
 cp ./conf.json ./dist
-mkdir ./dist/db/exp
+
+node ./bin/migrate up main
+cp -a ./src/db/exp ./dist/db

@@ -2,11 +2,15 @@
 import {Auth} from "./instagram/Auth";
 /*other*/
 import {logger} from "./logger";
+import momentTimezone from 'moment-timezone'
 
 (async () => {
     logger.info('--- SET ENV ---')
     const { setEnv } = await import("./env");
     await setEnv();
+
+    logger.info('--- SET TIMEZONE ---')
+    momentTimezone.tz.setDefault('Europe/Zaporozhye')
 
     logger.info('--- BOT LAUNCH ---')
     const { bot } = await import( "./telegram");

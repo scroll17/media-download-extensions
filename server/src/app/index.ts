@@ -29,7 +29,7 @@ export async function setup() {
     app.locals.port = PORT;
 
     app.use(express.json())
-    //app.use(checkAccess)
+    app.use(checkAccess)
     app.post<object, any, IReqBody>('/file',
         (req, res, next) => {
             const requiredKeys: Array<keyof IReqBody> = ['desiredTime', 'imgUrl', 'type'];
