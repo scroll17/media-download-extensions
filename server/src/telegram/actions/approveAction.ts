@@ -79,14 +79,14 @@ export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
             delay = desiredTime - Date.now()
         }
 
-        const jobData: JobModel.create.TArgs = {
+        await JobModel.create.exec(client, {
             name: "publish-content",
             data: {
                 fileId: file.id
+            },
+            options: {
+                delay
             }
-        }
-        if(delay) _.set(jobData, ['options', 'delay'], delay)
-
-        await JobModel.create.exec(client, jobData);
+        });
     })
 }

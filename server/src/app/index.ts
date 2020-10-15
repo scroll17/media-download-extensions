@@ -1,7 +1,7 @@
 /*external modules*/
 import express from 'express';
 import _ from 'lodash'
-import moment from 'moment'
+import moment, {Moment} from 'moment'
 /*middlewares*/
 import {checkAccess} from "./middlewares/checkAccess";
 /*DB*/
@@ -14,7 +14,7 @@ import { Constants } from "../constants";
 import {logger} from "../logger";
 
 interface IReqBody {
-    desiredTime: Date,
+    desiredTime: Moment,
     imgUrl: string;
     videoUrl?: string;
     caption?: string;
@@ -29,8 +29,7 @@ export async function setup() {
     app.locals.port = PORT;
 
     app.use(express.json())
-    app.use(checkAccess)
-
+    //app.use(checkAccess)
     app.post<object, any, IReqBody>('/file',
         (req, res, next) => {
             const requiredKeys: Array<keyof IReqBody> = ['desiredTime', 'imgUrl', 'type'];
@@ -49,7 +48,7 @@ export async function setup() {
                     return res.status(400).send(`"videoUrl" required`)
                 }
 
-                req.body.desiredTime = new Date(req.body.desiredTime);
+                req.body.desiredTime = moment(req.body.desiredTime, Constants.LocalTime);
                 if(req.body.desiredTime.valueOf() < Date.now()) {
                     return res.status(400).send(`Cannot publish in back time.`)
                 }

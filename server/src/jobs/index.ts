@@ -96,7 +96,7 @@ export class JobWorker {
             queueOpts
         )
 
-        this.logger.info('--- JOB WORKERS STARTED. ---');
+        this.logger.info('--- JOB WORKERS STARTED ---');
     }
 
     async stop() {

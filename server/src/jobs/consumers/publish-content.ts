@@ -28,6 +28,12 @@ export async function publishContentConsumer(
 
     logger.info(`Started: ${scope}.`, job.data);
 
+    // TODO: @BAG must be object but sometime is JSON
+    if(typeof job.data === "string") {
+        logger.warn('!!! job data is string !!!')
+        job.data = JSON.parse(job.data)
+    }
+
     await mainDB.getClient(async client => {
         const file = await FileModel.findById.exec(
             client,
