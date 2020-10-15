@@ -1,7 +1,5 @@
 /*external modules*/
 import { Middleware } from 'telegraf';
-import _ from 'lodash'
-import moment from 'moment'
 /*telegram*/
 import {TTelegrafContext} from "../index";
 /*models*/
