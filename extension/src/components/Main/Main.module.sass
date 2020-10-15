@@ -1,30 +1,97 @@
 .app
-    padding-top: 5px
     width: 100%
     height: 100%
-    color: white
-    font-size: 29px
 
-    .list
-        margin: 10px 0
+    display: flex
+    flex-direction: column
+    justify-content: flex-start
+    align-items: center
+    overflow: auto
+
+    margin: 10px 0
+
+    .selectedItem
+        width: 100%
+        height: 100%
+
+        .control
+            display: flex
+            flex-direction: row
+            justify-content: space-around
+            align-items: center
+
+            margin-bottom: 10px
+
+            img
+                filter: brightness(0) invert(1)
+                font-size: 45px
+                width: 50%
+
+                transition: all 0.3s ease
+
+                &:first-child
+                    margin-left: 20px
+
+                &:last-child
+                    margin-right: 20px
+
+                &:hover
+                    cursor: pointer
+                    transform: scale(1.2)
+
+
+        .content
+            display: flex
+            flex-direction: column
+
+            .date
+                margin: 10px
+                display: flex
+                flex-direction: row
+                justify-content: space-around
+
+                div
+                    width: 70px
+                    color: white
+
+            button
+                width: 70%
+                min-height: 50px
+                margin: 5px auto
+                background-color: white
+
+                font-size: 20px
+                color: black
+                cursor: pointer
+
+                border-radius: 20px
+
+            textarea
+                min-height: 100px
+                margin: 5px 10px 5px 10px
+
+            img
+                margin: 0 auto
+
+
+    .item
+        width: 90%
+        min-height: 45px
+        background-color: white
+
+        margin: 5px 0
+        border-radius: 20px
+
+        padding: 0 10px
+
         display: flex
-        flex-direction: column
-        justify-content: center
+        flex-direction: row
+        justify-content: flex-start
         align-items: center
 
-        list-style: none
-        padding: 0 20px
+        cursor: pointer
 
-        .item
-            padding: 4px 8px
-            border-radius: 8px
-            width: 100%
-            cursor: pointer
-
-            i
-                margin-right: 15px
-
-            span
-                text-transform: capitalize
-                 
+        .type
+            padding-left: 5px
+            font-size: 15px
     

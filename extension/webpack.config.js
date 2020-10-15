@@ -2,7 +2,6 @@ const path = require("path");
 
 const webpack = require('webpack');
 
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserPlugin = require('terser-webpack-plugin');
 
@@ -15,7 +14,7 @@ module.exports = {
     entry: path.join(__dirname, 'src', 'index.jsx'),
     output: {
         path: path.join(__dirname, "/public"),
-        filename: "background.js"
+        filename: "container.js"
     },
     resolve: {
         extensions: ['.js', '.jsx', '.sass']
@@ -100,9 +99,6 @@ module.exports = {
             'process.env': {
                 'NODE_ENV': JSON.stringify('production')
             }
-        }),
-        new HtmlWebpackPlugin({
-            template: path.join(__dirname, 'public', 'index.html')
         }),
         new MiniCssExtractPlugin({
             filename: withOutChunks ? '[name].css' : '[name].[hash].css',

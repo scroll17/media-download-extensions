@@ -1,6 +1,58 @@
-.app
-    margin: 0 auto
+.appEnable
+    position: fixed
+    right: 0px
+    bottom: 20px
+
     width: 350px
     height: 400px
-    background: url('images/login-bg.jpg')
+    background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%) //url('http://localhost:4200/content/login-bg.jpg')
     background-size: cover
+
+    display: flex
+    flex-direction: column
+    align-items: center
+
+    .form
+        width: 100%
+        display: flex
+        flex-direction: column
+
+        button
+            margin: 30px 40px 0 40px
+            height: 30px
+
+        label
+            color: white
+
+            padding: 5px 10px
+
+            display: flex
+            flex-direction: row
+            justify-content: space-between
+
+    .main
+        width: 100%
+        height: 330px
+
+    .action
+        margin-top: 25px
+
+        img
+            height: 30px
+            margin: 0 auto
+
+            font-size: 30px
+            filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%)
+
+            transition: all 0.3s ease
+
+            &:hover
+                cursor: pointer
+                transform: scale(1.2)
+
+.appDisable
+    position: fixed
+    right: 1px
+    bottom: 300px
+
+    cursor: pointer

@@ -1,0 +1,6 @@
+#! /usr/bin/env sh
+set -x
+NODE_ENV=production ./node_modules/.bin/tsc -p tsconfig.production.json
+cp -R ./src/notifications/emails/* ./dist/notifications/emails
+rm ./dist/notifications/emails/*.ts
+rm ./dist/db/migrations/*.map
