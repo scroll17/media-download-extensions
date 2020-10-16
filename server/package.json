@@ -35,6 +35,7 @@
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.31",
+    "ngrok": "^3.3.0",
     "sqlite3": "^5.0.0",
     "telegraf": "^3.38.0",
     "ts-node": "^9.0.0"

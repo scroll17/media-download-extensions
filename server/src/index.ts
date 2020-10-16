@@ -12,6 +12,10 @@ import momentTimezone from 'moment-timezone'
     logger.info('--- SET TIMEZONE ---')
     momentTimezone.tz.setDefault('Europe/Zaporozhye')
 
+    logger.info('--- SETUP NGROK ---')
+    const { setupNGROK } = await import('./ngrok')
+    await setupNGROK()
+
     logger.info('--- BOT LAUNCH ---')
     const { bot } = await import( "./telegram");
     await bot.launch();

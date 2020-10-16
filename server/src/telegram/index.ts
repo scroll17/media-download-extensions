@@ -3,7 +3,16 @@ import { Telegraf, Context } from 'telegraf';
 /*middlewares*/
 import { checkValidUserId } from "./middleware";
 /*commands*/
-import {Commands, getToken, getId, register, scheduler, getTimeToPublish, getServerTime} from "./commands";
+import {
+    Commands,
+    getToken,
+    getId,
+    register,
+    scheduler,
+    getTimeToPublish,
+    getServerTime,
+    getServerUrl
+} from "./commands";
 /*actions*/
 import {approveAction} from "./actions";
 /*DB*/
@@ -32,6 +41,7 @@ bot.command(Commands.GetToken, getToken);
 bot.command(Commands.GetId, getId);
 bot.command(Commands.GetTimeToPublish, getTimeToPublish);
 bot.command(Commands.GetServerTime, getServerTime);
+bot.command(Commands.GetServerUrl, getServerUrl);
 
 bot.action(/approve/, approveAction)
 

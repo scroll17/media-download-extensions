@@ -3,7 +3,9 @@ node_modules
 package-lock.json
 .idea/
 dist/
+
 conf.json
+ngrok.json
 
 media/images/*
 media/videos/*

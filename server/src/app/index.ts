@@ -29,6 +29,8 @@ export async function setup() {
     app.locals.port = PORT;
 
     app.use(express.json())
+    app.get('/test', (req, res) => res.sendStatus(200))
+
     app.use(checkAccess)
     app.post<object, any, IReqBody>('/file',
         (req, res, next) => {

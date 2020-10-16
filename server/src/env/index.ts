@@ -19,11 +19,15 @@ interface SetEnv {
 setEnv.REDIS_CONF = {} as SetEnv['REDIS_CONF'];
 setEnv.VALID_TELEGRAM_IDS = [] as SetEnv['VALID_TELEGRAM_IDS'];
 
-export async function setEnv() {
-    const confPath = path.resolve(__dirname, '../../', 'conf.json');
+export async function readConf<T = Record<string, string>>(name: string): Promise<T> {
+    const confPath = path.resolve(__dirname, '../../', name);
 
     const confFile = await fs.readFile(confPath, { encoding: 'utf-8' });
-    const conf = JSON.parse(confFile);
+    return JSON.parse(confFile);
+}
+
+export async function setEnv() {
+    const conf = await readConf<SetEnv & Record<string, any>>('conf.json');
 
     Object
         .keys(requiredOptions)
