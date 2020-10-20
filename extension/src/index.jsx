@@ -18,6 +18,8 @@ if(!root_extension) {
     document.body.appendChild(root_extension)
 }
 
+root_extension.style.zIndex = '9999'
+
 ReactDOM.render(<App />, root_extension)
 
 // serviceWorker.unregister();
