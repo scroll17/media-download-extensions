@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 export NODE_ENV="production"
-npx tsc -p tsconfig.json
+npx tsc -p tsconfig.production.json
 
 cp ./conf.json ./dist
 cp ./ngrok.json ./dist

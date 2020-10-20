@@ -8,11 +8,6 @@ import {UserModel} from "../../db/models/user";
 /*other*/
 
 export const checkAccess: RequestHandler = async (req, res, next) => {
-    // TODO
-    // if(req.get('host') !== 'instagram') {
-    //     return res.sendStatus(403)
-    // }
-
     const secretToken = req.get('x-client-token');
     const userId = req.get('x-user-id');
 
