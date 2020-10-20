@@ -10,11 +10,21 @@ if(!process.env.NODE_ENV) process.env.NODE_ENV = 'production';
 const isProduction = process.env.NODE_ENV === 'production';
 const withOutChunks = true;
 
+let entry;
+let fileName;
+if (process.env.POPUP) {
+    entry = path.join(__dirname, 'popup', 'index.jsx')
+    fileName = 'popup.js'
+} else {
+    entry = path.join(__dirname, 'src', 'index.jsx')
+    fileName = 'container.js'
+}
+
 module.exports = {
-    entry: path.join(__dirname, 'src', 'index.jsx'),
+    entry: ['@babel/polyfill', entry],
     output: {
         path: path.join(__dirname, "/public"),
-        filename: "container.js"
+        filename: fileName
     },
     resolve: {
         extensions: ['.js', '.jsx', '.sass']

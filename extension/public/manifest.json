@@ -13,13 +13,15 @@
   },
   "content_security_policy": "script-src 'self' https://kit.fontawesome.com/8a98030ce8.js; object-src 'self'; style-src * data: 'unsafe-inline' 'unsafe-eval';",
   "permissions": [
+    "<all_urls>",
     "background",
-    "activeTab"
+    "activeTab",
+    "storage"
   ],
   "content_scripts": [
     {
       "matches": ["https://www.instagram.com/"],
-      "js": ["create-container.js", "container.js", "drop-container.js"]
+      "js": ["create-container.js", "container.js", "drop-container.js", "popup.js"]
     }
   ],
   "web_accessible_resources": [

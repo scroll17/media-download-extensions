@@ -8,10 +8,20 @@ import style from './Main.module.sass';
 import {getLocalFile} from "../../utils/getLocalFile";
 import { ContentType } from "../../utils/contentType";
 
-export function Main(param) {
+const SERVER_URL = 'instagram-publisher-server-url'
+const DATA_ID = 'instagram-publisher-data-id'
+const DATA_TOKEN = 'instagram-publisher-data-token'
+
+function setIfExist(obj, key, value) {
+    if(value) {
+        obj[key] = value
+    }
+}
+
+export function Main() {
     const [headers] = useState({
-        'x-client-token': param.token,
-        'x-user-id': param.userId,
+        'x-client-token': localStorage.getItem(DATA_TOKEN) ?? '',
+        'x-user-id': localStorage.getItem(DATA_ID) ?? '',
         'Content-Type': 'application/json'
     })
 
@@ -20,34 +30,48 @@ export function Main(param) {
 
     const [caption, setCation] = useState(null)
     const [selectedDate, handleDateChange] = useState(
-        moment().add(5, 'minutes').toDate()
+        moment()
+            .add(5, 'minutes')
+            .toDate()
     );
 
-    const send = () => {
+    const send = async () => {
+        const { type, coverImage, videoUrl } = selectedItem;
         const data = {
-            type: selectedItem.type,
-            desiredTime: (moment.isMoment(selectedDate) ? selectedDate.toDate() : selectedDate).toLocaleString(),
-            imgUrl: selectedItem.coverImage
+            type,
+            imgUrl: coverImage,
+            desiredTime: (moment.isMoment(selectedDate) ? selectedDate.toDate() : selectedDate).toLocaleString()
         }
-        if(selectedItem.videoUrl) data.videoUrl = selectedItem.videoUrl
-        if(caption) data.caption = caption
 
-        fetch(`http://localhost:4200/file`, { method: 'POST', headers, body: JSON.stringify(data) })
-            .then(response => {
-                if(response.status !== 200) {
-                    return response.text()
-                } else {
-                    return Promise.resolve('Отправлено')
-                }
-            })
-            .then(text => {
-                if(text === 'Отправлено') {
-                    setItems(items.filter((item, index) => index !== selectedItem.index))
-                    selectItem(null)
-                } else {
-                    alert(text);
-                }
-            })
+        setIfExist(data, 'videoUrl', videoUrl)
+        setIfExist(data, 'caption', caption)
+
+        const url = localStorage.getItem(SERVER_URL)
+        if(!url) {
+            alert('server url is empty!')
+            return
+        }
+
+        const fetchData = {
+            headers,
+            method: 'POST',
+            body: JSON.stringify(data),
+            //mode: 'no-cors'
+        }
+        const response = await fetch(`${url}/file`, fetchData)
+        console.log('response => ', response)
+
+        if(response.status === 200) {
+            setItems(items.filter((item, index) => index !== selectedItem.index))
+            selectItem(null)
+        } else {
+            const text = await response.text()
+            alert(`
+                Ошибка.
+                Статус: ${response.status}. ${response.statusText}
+                Текст: "${text}"
+            `)
+        }
     }
 
     function instagramDownloadContent(el) {
