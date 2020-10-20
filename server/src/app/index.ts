@@ -4,6 +4,7 @@ import _ from 'lodash'
 import moment, {Moment} from 'moment'
 /*middlewares*/
 import {checkAccess} from "./middlewares/checkAccess";
+import {cors} from "./middlewares/cors";
 /*DB*/
 import {FileType} from "../db/types/file";
 import {mainDB} from "../db";
@@ -29,6 +30,7 @@ export async function setup() {
     app.locals.port = PORT;
 
     app.use(express.json())
+    app.use(cors)
     app.get('/test', (req, res) => res.sendStatus(200))
 
     app.use(checkAccess)
