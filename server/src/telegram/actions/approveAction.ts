@@ -65,27 +65,27 @@ export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
             })
         )
 
-        if(options.status === FileApprove.Disabled) return;
+        if(options.status === FileApprove.Approved) {
+            const desiredTime = moment(file.desiredTime, Constants.DBDateTime).valueOf();
+            const timeNow = moment().tz('Europe/Zaporozhye').valueOf()
 
-        const desiredTime = moment(file.desiredTime, Constants.DBDateTime).valueOf();
-        const timeNow = moment().tz('Europe/Zaporozhye').valueOf()
-
-        let delay: number;
-        if(desiredTime <= timeNow) {
-            delay = 0
-        } else {
-            delay = desiredTime - timeNow
-        }
-
-        await JobModel.create.exec(client, {
-            name: "publish-content",
-            data: {
-                fileId: file.id
-            },
-            options: {
-                delay
+            let delay: number;
+            if(desiredTime <= timeNow) {
+                delay = 0
+            } else {
+                delay = desiredTime - timeNow
             }
-        });
+
+            await JobModel.create.exec(client, {
+                name: "publish-content",
+                data: {
+                    fileId: file.id
+                },
+                options: {
+                    delay
+                }
+            });
+        }
 
         await FileModel.update.exec(
             client,
