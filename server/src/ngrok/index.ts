@@ -5,7 +5,6 @@ import { readConf } from "../env";
 
 type TNgrokConfig = {
     authtoken: string;
-    proto: 'http';
 }
 
 async function setupNGROK() {

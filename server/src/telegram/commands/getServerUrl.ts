@@ -1,6 +1,6 @@
 /*external modules*/
 import { Middleware } from 'telegraf';
-import {ngrok} from "../../ngrok";
+import {ngrok} from "../../ngrok/index";
 /*telegram*/
 import {TTelegrafContext} from "../index";
 /*models*/

@@ -13,7 +13,7 @@ import momentTimezone from 'moment-timezone'
     momentTimezone.tz.setDefault('Europe/Zaporozhye')
 
     logger.info('--- SETUP NGROK ---')
-    const { setupNGROK } = await import('./ngrok')
+    const { setupNGROK } = await import('./ngrok/index')
     await setupNGROK()
 
     logger.info('--- BOT LAUNCH ---')
