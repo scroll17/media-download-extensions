@@ -12,7 +12,8 @@ import {
     getTimeToPublish,
     getServerTime,
     getServerUrl,
-    getContent
+    getContent,
+    getLogs
 } from "./commands";
 /*actions*/
 import {approveAction, contentAction} from "./actions";
@@ -44,6 +45,7 @@ bot.command(Commands.GetTimeToPublish, getTimeToPublish);
 bot.command(Commands.GetServerTime, getServerTime);
 bot.command(Commands.GetServerUrl, getServerUrl);
 bot.command(Commands.GetContent, getContent);
+bot.command(Commands.GetLogs, getLogs);
 
 bot.action(/approve/, approveAction)
 bot.action(/content/, contentAction)
