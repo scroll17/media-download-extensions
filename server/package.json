@@ -21,6 +21,7 @@
     "@types/lodash": "^4.14.161",
     "@types/node": "^14.11.1",
     "@types/sqlite3": "^3.1.6",
+    "telegram-typings": "^4.0.0-beta",
     "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "<3.8.0"
   },

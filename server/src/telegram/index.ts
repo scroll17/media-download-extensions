@@ -11,7 +11,8 @@ import {
     scheduler,
     getTimeToPublish,
     getServerTime,
-    getServerUrl
+    getServerUrl,
+    getContent
 } from "./commands";
 /*actions*/
 import {approveAction} from "./actions";
@@ -42,6 +43,7 @@ bot.command(Commands.GetId, getId);
 bot.command(Commands.GetTimeToPublish, getTimeToPublish);
 bot.command(Commands.GetServerTime, getServerTime);
 bot.command(Commands.GetServerUrl, getServerUrl);
+bot.command(Commands.GetContent, getContent);
 
 bot.action(/approve/, approveAction)
 

@@ -5,6 +5,7 @@ export { getId } from './getId'
 export { getServerTime } from './getServerTime'
 export { getTimeToPublish } from './getTimeToPublish'
 export { getServerUrl } from './getServerUrl'
+export { getContent } from './getContent'
 
 export enum Commands {
     Register = 'register',
@@ -13,5 +14,6 @@ export enum Commands {
     GetId = 'get_id',
     GetTimeToPublish = '/get_time_to_publish',
     GetServerTime = '/get_server_time',
-    GetServerUrl = '/get_server_url'
+    GetServerUrl = '/get_server_url',
+    GetContent = '/get_content'
 }

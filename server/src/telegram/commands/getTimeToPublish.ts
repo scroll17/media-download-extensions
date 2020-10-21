@@ -1,28 +1,28 @@
 /*external modules*/
 import { Middleware } from 'telegraf';
-import _ from 'lodash'
 import moment from 'moment'
 /*telegram*/
 import {TTelegrafContext} from "../index";
 import {parseButtonData} from "../buttons";
+import {getInlineKeyboard} from "../utils/getInlineKeyboard";
 /*models*/
 import {FileModel} from "../../db/models/file";
 /*other*/
 import {Constants} from "../../constants";
 
 export const getTimeToPublish: Middleware<TTelegrafContext> = async (ctx) => {
-    if(_.isEmpty(_.get(ctx, ['message', 'reply_to_message']))) {
-        return await ctx.reply('Запись не имеет данных о публикациию')
+    const result = getInlineKeyboard(ctx.message, 'хочет опубликовать')
+
+    if(result[0] === 0) {
+        const [, message] = result
+        if(message) await ctx.reply(message)
+
+        return
     } else {
-        const replyMessage = _.get(ctx, ['message', 'reply_to_message']);
+        const [ approveButtonObject ] = result[1][0]
+        const callbackData = approveButtonObject.callback_data
 
-        if(_.get(replyMessage, ['from', 'username']) !== 'insta_publisher_bot') return
-        if(!_.get(replyMessage, 'caption', '').includes('хочет опубликовать')) return
-
-        const [ approveButtonObject ] = _.get(replyMessage, ['reply_markup', 'inline_keyboard', 0])
-
-        const { value: fileId } = parseButtonData(approveButtonObject.callback_data)
-
+        const { value: fileId } = parseButtonData(callbackData!)
         const file = await FileModel.findById.exec(
             ctx.db.main,
             {
