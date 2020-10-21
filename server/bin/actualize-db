@@ -1,0 +1,3 @@
+#! /usr/bin/env sh
+
+cp -rf ./dist/db/exp/main.sqlite ./src/db/exp

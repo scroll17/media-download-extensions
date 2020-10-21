@@ -6,6 +6,7 @@ dist/
 
 conf.json
 ngrok.json
+server.log
 
 media/images/*
 media/videos/*
