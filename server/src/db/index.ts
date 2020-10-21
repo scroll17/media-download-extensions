@@ -3,6 +3,7 @@ import sqlite3, { Database, RunResult } from 'sqlite3';
 import path from "path";
 /* other */
 import { sql, SqlStatement } from "./sql";
+import {logger} from "../logger";
 
 export class DB {
     private constructor(private readonly _db: Database, private readonly _dbPath: string) {}
@@ -132,7 +133,7 @@ export class DB {
                     result = await cb(db);
                     resolve(result)
                 } catch (error) {
-                    console.error('SQLite error', error)
+                    logger.error('SQLite error', error)
                     reject(error);
                 }
             })
@@ -154,7 +155,7 @@ export class DB {
                 } catch (error) {
                     await db.exec('ROLLBACK;');
 
-                    console.error('SQLite error', error)
+                    logger.error('SQLite error', error)
                     reject(error);
                 }
             })

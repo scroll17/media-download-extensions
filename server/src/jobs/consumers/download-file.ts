@@ -18,7 +18,7 @@ import {FileModel} from "../../db/models/file";
 import {UserModel} from "../../db/models/user";
 /*telegram*/
 import {bot} from "../../telegram";
-import {approveButtons} from "../../telegram/buttons";
+import { createInlineKeyboard, approveButtons, contentButton } from "../../telegram/buttons";
 /*other*/
 import {Constants} from "../../constants";
 import {logger} from '../../logger';
@@ -189,6 +189,10 @@ export async function downloadFileConsumer(
                     : await UserModel.findByTGId.exec(client, { telegramId: memberId })
                 if(!user) return
 
+                const inlineKeyboard = createInlineKeyboard([
+                    approveButtons(file.id),
+                    contentButton(file.id, `Get full ${job.data.type}`)
+                ])
                 const result = await bot.telegram.sendPhoto(
                     user.chatId,
                     {
@@ -196,7 +200,7 @@ export async function downloadFileConsumer(
                     },
                     {
                         caption: `"${mainUser.name}" хочет опубликовать (${job.data.type})`,
-                        ...approveButtons(file.id),
+                        ...inlineKeyboard,
                         disable_web_page_preview: undefined
                     }
                 )

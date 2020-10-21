@@ -21,7 +21,7 @@ export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
 
     await ctx.db.main.getClientTransaction(async client => {
         const file = await FileModel.findById.exec(client, { fileId: Number(fileId) });
-        if(!file) throw new Error('file not found');
+        if(!file) return await ctx.reply('Файл не найден.');
 
         if(file.approved !== FileApprove.NotSeen) {
             return await ctx.reply('Выбор уже сделан.')

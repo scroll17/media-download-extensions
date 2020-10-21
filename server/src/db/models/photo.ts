@@ -108,8 +108,6 @@ export namespace PhotoModel {
                 if(!_.isEmpty(parse)) opts.location = parse
             }
 
-            console.log('opts > ', opts)
-
             const publishResult = await ig.publish.photo(opts);
 
             logger.debug(`--- PHOTO PUBLISHED---`)

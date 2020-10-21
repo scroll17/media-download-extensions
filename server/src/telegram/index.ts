@@ -15,7 +15,7 @@ import {
     getContent
 } from "./commands";
 /*actions*/
-import {approveAction} from "./actions";
+import {approveAction, contentAction} from "./actions";
 /*DB*/
 import {DB, mainDB} from "../db";
 import {Databases} from "../db/migration";
@@ -46,5 +46,6 @@ bot.command(Commands.GetServerUrl, getServerUrl);
 bot.command(Commands.GetContent, getContent);
 
 bot.action(/approve/, approveAction)
+bot.action(/content/, contentAction)
 
 export { TTelegrafContext, bot }

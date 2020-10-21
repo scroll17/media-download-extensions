@@ -16,9 +16,7 @@ export const getToken: Middleware<TTelegrafContext> = async (ctx) => {
                 telegramId: ctx.from?.id!
             }
         )
-        if(!user) {
-            return await ctx.reply('Вы не зареестрированы.')
-        }
+        if(!user) return await ctx.reply('Вы не зареестрированы.')
 
         if(user.tokenId) {
             await TokenModel.remove.exec(

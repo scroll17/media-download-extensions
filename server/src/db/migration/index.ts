@@ -209,7 +209,7 @@ export async function execMigrate(cmd: MigrateCommand, DBName: Databases, paths:
         }
         case MigrateCommand.Delete: {
             if(_.isEmpty(paths)) {
-                console.debug('No provided paths.')
+                logger.debug('No provided paths.')
                 return
             }
 
