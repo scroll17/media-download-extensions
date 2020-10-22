@@ -14,7 +14,7 @@ Extension makes it possible to select content on the Instagram page and then sen
 - User approving or disable new publications (notice contains cover image, buttons for select action, and button for get full file content).
 - If user approved publication, then the server will start a delayed job for publish content and after published will notify user about this.
 
-Telegram bot have commands: 
+**Telegram bot have commands**: 
 - register - Register in bot
 - scheduler - Calendar of scheduled publications
 - get_id - Get you id in database
@@ -24,3 +24,28 @@ Telegram bot have commands:
 - get_server_url - Get the server url for extension input
 - get_server_time - Time on server
 - get_time_to_publish - Time before publication
+
+## Launch server
+To start the server you need two configs files: _ngrok.json_ and _conf.json_. <br/>
+Config files should lie in **server/src**
+
+**ngrok.json**: 
+```typescript
+    type TNgrok = {
+      authtoken: string;
+    }
+```
+
+**conf.json**: 
+```typescript
+    type TConf = {
+      IG_USERNAME: string;
+      IG_PASSWORD: string;
+      PORT: number;
+      VALID_TELEGRAM_IDS: number[];
+      TG_TOKEN: string;
+      REDIS_CONF: object;
+    }
+```
+
+You can contact me in [telegram](https://t.me/sckroll17) or [email](mailto:zololotarenko.2015@gmail.com).

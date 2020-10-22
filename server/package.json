@@ -11,8 +11,8 @@
     "count_number_of_code": "npx @intrinsic/loc"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Denis Zolotarenko",
+  "license": "GPL",
   "devDependencies": {
     "@types/bull": "^3.14.3",
     "@types/cors": "^2.8.7",
