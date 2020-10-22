@@ -1,10 +1,10 @@
-#Chrome extension for a download and publish content from instagram 
+# Chrome extension for a download and publish content from instagram 
 
-##Extension
+## Extension
 It's Google Chrome extension. <br/>
 Extension makes it possible to select content on the Instagram page and then sends the selected content to the server.
 
-##Server
+## Server
 **! The server allows you to publish content at a selected time (now or later)** <br/>
 **! The server uses the Ngrok for local tunneling**
 
