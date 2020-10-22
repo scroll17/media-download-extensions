@@ -5,8 +5,8 @@ It's Google Chrome extension. <br/>
 Extension makes it possible to select content on the Instagram page and then sends the selected content to the server.
 
 ## Server
-**! The server allows you to publish content at a selected time (now or later)** <br/>
-**! The server uses the Ngrok for local tunneling**
+**The server allows you to publish content at a selected time (now or later)** <br/>
+**The server uses the Ngrok for local tunneling**
 
 - Server getting request from extension (with user id and user token).
 - The request consist with desired time, url of content, caption for content and type of content.
