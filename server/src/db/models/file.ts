@@ -4,6 +4,7 @@ import moment from 'moment'
 import {sql} from "../sql";
 import {$FileTable, File, FileType} from "../types/file";
 import {$UserTable} from "../types/user";
+import {$JobTable, Job} from "../types/job";
 /*other*/
 import { TFunction, TArray } from '@server/types';
 import {Constants} from "../../constants";
@@ -58,7 +59,7 @@ export namespace FileModel {
     export namespace update {
         export type TArgs = {
             id: File['id'],
-            data: Partial<Pick<File, 'published' | 'approved' | 'messageIds'>>
+            data: Partial<Pick<File, 'published' | 'approved' | 'messageIds' | 'jobId'>>
         }
         export type TReturn = File
         export const exec: TFunction.Update<TArgs, TReturn> = async (client, args) => {
@@ -69,7 +70,8 @@ export namespace FileModel {
                     UPDATE ${$FileTable}
                     SET "published" = ${sql.setNewValue("published", data.published)},
                         "approved" = ${sql.setNewValue("approved", data.approved)},
-                        "messageIds" = ${sql.setNewValue("messageIds", data.messageIds && JSON.stringify(data.messageIds))}
+                        "messageIds" = ${sql.setNewValue("messageIds", data.messageIds && JSON.stringify(data.messageIds))},
+                        "jobId" = ${sql.setNewValue("jobId", data.jobId)}
                     WHERE "id" = ${args.id}
                 `
             )
@@ -91,6 +93,23 @@ export namespace FileModel {
             )
 
             return file
+        }
+    }
+
+    export namespace getJob {
+        export type TArgs = { fileId: number }
+        export type TReturn = Job;
+        export const exec: TFunction.SelectOne<TArgs, TReturn> = async (client, args) => {
+            const job = await client.get<Job>(
+                sql`
+                    SELECT jobs.*
+                    FROM ${$FileTable} files
+                        INNER JOIN ${$JobTable} jobs ON jobs."id" = files."jobId" 
+                    WHERE files."id" = ${args.fileId}
+                `
+            )
+
+            return job
         }
     }
 

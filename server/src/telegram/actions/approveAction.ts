@@ -78,7 +78,7 @@ export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
                 delay = desiredTime - timeNow
             }
 
-            await JobModel.create.exec(client, {
+            const job = await JobModel.create.exec(client, {
                 name: "publish-content",
                 data: {
                     fileId: file.id
@@ -87,6 +87,15 @@ export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
                     delay
                 }
             });
+            await FileModel.update.exec(
+                client,
+                {
+                    id: file.id,
+                    data: {
+                        jobId: job!.id
+                    }
+                }
+            );
 
             ctx.events.push(async () => {
                 const queue = await jobWorker.getQueue('save-redis')

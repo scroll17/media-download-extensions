@@ -31,6 +31,8 @@ export interface File {
     storyId?: number;
     photoId?: number;
 
+    jobId?: number;
+
     createdAt: Date;
     updatedAt: Date;
 }
