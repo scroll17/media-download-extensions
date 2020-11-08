@@ -5,6 +5,7 @@ import _ from 'lodash'
 /*workers*/
 import { downloadFileConsumer, DownloadFileOptions } from "./consumers/download-file";
 import {publishContentConsumer, PublishContentOptions} from "./consumers/publish-content";
+import {saveRedisConsumer, SaveRedisOptions} from "./consumers/save-redis";
 /*other*/
 import {SyncQueue, SyncQueueOptions } from "./SyncQueue";
 import {logger} from "../logger";
@@ -17,6 +18,7 @@ interface Consumer<T> {
 export type QueueNameList =
     | 'download-file'
     | 'publish-content'
+    | 'save-redis'
 
 const FIVE_MINUTES_IN_MS = 1000 * 60 * 60 * 12;
 
@@ -94,6 +96,21 @@ export class JobWorker {
             'publish-content',
             publishContentConsumer,
             queueOpts
+        )
+
+        /**
+         *  Create redis backup
+         */
+        this.addQueue<SaveRedisOptions>(
+            'save-redis',
+            saveRedisConsumer,
+            {
+                ...queueOpts,
+                defaultJobOptions: {
+                    ...queueOpts.defaultJobOptions,
+                    delay: /*1000 * 60 * */10 // 10 mins delay
+                }
+            }
         )
 
         this.logger.info('--- JOB WORKERS STARTED ---');
