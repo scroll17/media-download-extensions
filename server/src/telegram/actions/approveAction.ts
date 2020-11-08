@@ -98,16 +98,23 @@ export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
             );
 
             ctx.events.push(async () => {
+                logger.debug('init save-redis job.')
+
                 const queue = jobWorker.getQueue('save-redis')
                 const jobId = await redis.get(Constants.Redis.SaveRedisJob)
 
                 if(jobId) {
                     const oldJob = await queue.getJob(jobId)
-                    if(oldJob) await oldJob.remove()
+                    if(oldJob) {
+                        logger.debug('remove old save-redis job.')
+                        await oldJob.remove()
+                    }
                 }
 
                 const job = await queue.add({})
                 await redis.set(Constants.Redis.SaveRedisJob, job.id)
+
+                logger.debug('added save-redis job.')
             })
         }
 
