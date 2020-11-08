@@ -8,6 +8,6 @@ export namespace Constants {
     export const LogPath = path.resolve(__dirname, '../', 'server.log')
 
     export namespace Redis {
-        export const SaveRedisJob = 'save-redis'
+        export const SaveRedisJob = 'save-redis-job'
     }
 }

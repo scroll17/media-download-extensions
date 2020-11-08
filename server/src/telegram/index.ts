@@ -14,7 +14,8 @@ import {
     getServerTime,
     getServerUrl,
     getContent,
-    getLogs
+    getLogs,
+    createRedisBackup
 } from "./commands";
 /*actions*/
 import {approveAction, contentAction} from "./actions";
@@ -58,6 +59,7 @@ bot.command(Commands.GetServerTime, getServerTime);
 bot.command(Commands.GetServerUrl, getServerUrl);
 bot.command(Commands.GetContent, getContent);
 bot.command(Commands.GetLogs, getLogs);
+bot.command(Commands.CreateRedisBackup, createRedisBackup);
 
 bot.action(/approve/, approveAction)
 bot.action(/content/, contentAction)
