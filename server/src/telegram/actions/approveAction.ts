@@ -6,6 +6,7 @@ import moment from "moment";
 import {TTelegrafContext} from "../index";
 import {parseButtonData} from "../buttons";
 /*DB*/
+import {redis} from "../../db/redis";
 import {File, FileApprove} from "../../db/types/file";
 /*models*/
 import {UserModel} from "../../db/models/user";
@@ -15,6 +16,7 @@ import {JobModel} from "../../db/models/job";
 import {Constants} from "../../constants";
 import {setEnv} from "../../env";
 import {logger} from "../../logger";
+import jobWorker from "../../jobs";
 
 export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
     const { value: fileId, options } = parseButtonData<{ status: FileApprove }>(ctx.callbackQuery?.data!);
@@ -85,6 +87,19 @@ export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
                     delay
                 }
             });
+
+            ctx.events.push(async () => {
+                const queue = await jobWorker.getQueue('save-redis')
+                const jobId = await redis.get(Constants.Redis.SaveRedisJob)
+
+                if(jobId) {
+                    const oldJob = await queue.getJob(jobId)
+                    if(oldJob) await oldJob.remove()
+                }
+
+                const job = await queue.add({})
+                await redis.set(Constants.Redis.SaveRedisJob, job.id)
+            })
         }
 
         await FileModel.update.exec(
@@ -97,4 +112,6 @@ export const approveAction: Middleware<TTelegrafContext> = async (ctx) => {
             }
         );
     })
+
+    await ctx.resolveEvents()
 }

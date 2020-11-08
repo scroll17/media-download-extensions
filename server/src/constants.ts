@@ -6,4 +6,8 @@ export namespace Constants {
 
     export const BotName = 'insta_publisher_bot'
     export const LogPath = path.resolve(__dirname, '../', 'server.log')
+
+    export namespace Redis {
+        export const SaveRedisJob = 'save-redis'
+    }
 }

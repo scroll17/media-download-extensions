@@ -11,6 +11,7 @@ import {bot} from "../../telegram";
 /*other*/
 import {logger} from '../../logger';
 import {setEnv} from "../../env";
+import {Constants} from "../../constants";
 
 export type SaveRedisOptions = {}
 
@@ -40,6 +41,8 @@ export async function saveRedisConsumer(
                 )
             })
         )
+
+        await redis.del(Constants.Redis.SaveRedisJob)
     } catch (error) {
         logger.error('Error create backup redis', error)
     }

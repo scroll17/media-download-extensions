@@ -108,7 +108,7 @@ export class JobWorker {
                 ...queueOpts,
                 defaultJobOptions: {
                     ...queueOpts.defaultJobOptions,
-                    delay: /*1000 * 60 * */10 // 10 mins delay
+                    delay: 1000 * 60 * 10 // 10 min delay
                 }
             }
         )

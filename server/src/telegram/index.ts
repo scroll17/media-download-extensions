@@ -1,5 +1,6 @@
 /*external modules*/
 import { Telegraf, Context } from 'telegraf';
+import _  from 'lodash'
 /*middlewares*/
 import { checkValidUserId } from "./middleware";
 /*commands*/
@@ -22,16 +23,27 @@ import {DB, mainDB} from "../db";
 import {Databases} from "../db/migration";
 /*other*/
 
-interface TCustomTelegrafContext extends Context {
-    db: Record<Databases, DB>
+interface TTelegrafContext extends Context {
+    db: Record<Databases, DB>;
+    events: Array<() => Promise<any>>;
+    resolveEvents: () => Promise<void>
 }
 
-const bot = new Telegraf<TCustomTelegrafContext>(process.env.TG_TOKEN);
-type TTelegrafContext = typeof bot['context'];
+const bot = new Telegraf<TTelegrafContext>(process.env.TG_TOKEN);
 
-bot.context.db = {
-    [Databases.Main]: mainDB
-}
+bot.context = Object.assign(bot.context, {
+    db: {
+        [Databases.Main]: mainDB
+    },
+    events: [],
+    async resolveEvents() {
+        const events = this.events as TTelegrafContext['events']
+
+        if(!_.isEmpty(events))  {
+            await Promise.all(_.map(events, event => event()))
+        }
+    }
+})
 
 bot.start((ctx) => ctx.reply('Бот запущен.'))
 
