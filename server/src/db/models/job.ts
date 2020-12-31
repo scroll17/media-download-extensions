@@ -51,7 +51,9 @@ export namespace JobModel {
         export type TArgs = (
             Pick<Job, 'id'> | Required<Pick<Job, 'externalId'>>
         ) & {
-            data: Partial<Pick<Job, 'status' | 'data' | 'error' | 'externalId'>>
+            data: Partial<Pick<Job, 'status' | 'error' | 'externalId'>> & {
+                jobData?: Job['data'];
+            }
         }
         export type TReturn = Job
         export const exec: TFunction.Update<TArgs, TReturn> = async (client, args) => {
@@ -67,7 +69,7 @@ export namespace JobModel {
                 sql`
                     UPDATE ${$JobTable}
                     SET "status" = ${sql.setNewValue("status", data.status)},
-                        "data" = ${sql.setNewValue("data", data.data && JSON.stringify(args.data))},
+                        "data" = ${sql.setNewValue("data", data.jobData && JSON.stringify(data.jobData))},
                         "error" = ${sql.setNewValue("error", data.error && String(data.error), true)},
                         "externalId" = ${sql.setNewValue("externalId", data.externalId, true)}
                     WHERE ${findByCondition}
@@ -81,14 +83,12 @@ export namespace JobModel {
             } else {
                 job = await findBy.exec(client, { externalId: args.externalId });
             }
-
             if(!job) return
 
             const queue = jobWorker.getQueue(job.name);
-
             if (queue) {
                 const queueJob = await queue.getJob(job.externalId!);
-                await queueJob?.update(job.data);
+                await queueJob?.update(JSON.stringify(job.data));
             }
 
             return job
