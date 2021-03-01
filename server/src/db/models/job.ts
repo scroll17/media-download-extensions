@@ -88,7 +88,11 @@ export namespace JobModel {
             const queue = jobWorker.getQueue(job.name);
             if (queue) {
                 const queueJob = await queue.getJob(job.externalId!);
-                await queueJob?.update(JSON.stringify(job.data));
+                await queueJob?.update(
+                    typeof job.data === "string"
+                        ? JSON.parse(job.data)
+                        : job.data
+                );
             }
 
             return job

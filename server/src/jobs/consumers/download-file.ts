@@ -39,14 +39,7 @@ export async function downloadFileConsumer(
     job: Job<DownloadFileOptions>
 ) {
     const scope = 'download-file';
-
     logger.info(`Started: ${scope}.`, job.data);
-
-    // TODO: @BAG must be object but sometime is JSON
-    if(typeof job.data === "string") {
-        logger.warn('!!! job data is string !!!')
-        job.data = JSON.parse(job.data)
-    }
 
     const {
         imgUrl,

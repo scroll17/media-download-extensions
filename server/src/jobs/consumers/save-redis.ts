@@ -19,7 +19,6 @@ export async function saveRedisConsumer(
     job: Job<SaveRedisOptions>
 ) {
     const scope = 'save-redis';
-
     logger.info(`Started: ${scope}.`, job.data);
 
     try {
