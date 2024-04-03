@@ -2,30 +2,52 @@
   "name": "Instagram Publisher",
   "version": "1.0.0",
   "author": "Denis Zolotarenko",
-  "manifest_version": 2,
-  "browser_action": {
-      "default_popup": "index.html",
-      "default_title": "Download",
-      "default_icon": "icon.png"
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Download",
+    "default_icon": "icon.png"
   },
   "icons": {
-      "256": "icon.png"
+    "256": "icon.png"
   },
-  "content_security_policy": "script-src 'self' https://kit.fontawesome.com/8a98030ce8.js; object-src 'self'; style-src * data: 'unsafe-inline' 'unsafe-eval';",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; style-src * data: 'unsafe-inline' 'unsafe-eval';"
+  },
   "permissions": [
-    "<all_urls>",
     "background",
     "activeTab",
-    "storage"
+    "storage",
+    "scripting"
+  ],
+  "optional_permissions": [],
+  "host_permissions": [
+    "<all_urls>"
   ],
   "content_scripts": [
     {
-      "matches": ["https://www.instagram.com/"],
-      "js": ["create-container.js", "container.js", "drop-container.js", "popup.js"]
+      "matches": [
+        "https://www.instagram.com/*"
+      ],
+      "js": [
+        "create-container.js",
+        "container.js",
+        "drop-container.js",
+        "popup.js",
+        "fontawesome.js"
+      ]
     }
   ],
   "web_accessible_resources": [
-    "styles/*",
-    "images/*"
+    {
+      "matches": [
+        "https://www.instagram.com/*"
+      ],
+      "resources": [
+        "styles/*",
+        "images/*"
+      ],
+      "extension_ids": []
+    }
   ]
 }
