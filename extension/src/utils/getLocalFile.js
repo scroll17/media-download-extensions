@@ -1,3 +1,3 @@
 export function getLocalFile(file, dirName = 'images') {
-    return `chrome-extension://efnbilelbaipgkhinemjpgdalnibemao/${dirName}/${file}`
+    return `chrome-extension://kfkehggpbhceoakoohilbpcibffmafcd/${dirName}/${file}`
 }
